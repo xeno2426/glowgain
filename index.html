@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0e0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GlowGain">
+<meta name="description" content="Daily skincare & weight-gain routine tracker with local AI coach">
+<link rel="manifest" href="manifest.json">
+<title>GlowGain 🌿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════ */
+:root {
+  --bg:         #0c0e0d;
+  --surface:    #131816;
+  --card:       #1a2120;
+  --card2:      #1e2725;
+  --border:     #263230;
+  --border2:    #2e3d3a;
+  --amber:      #e8a835;
+  --amber-dim:  #a07820;
+  --amber-glow: rgba(232,168,53,.15);
+  --jade:       #52b08a;
+  --jade-dim:   #2d7a5e;
+  --jade-glow:  rgba(82,176,138,.15);
+  --cream:      #e8dcc8;
+  --cream-dim:  #7a9490;
+  --cream-faint:#3a4a48;
+  --danger:     #e06868;
+  --purple:     #b478c8;
+  --blue:       #6482c8;
+  --r:          16px;
+  --r-sm:       10px;
+  --nav-h:      68px;
+  --shadow:     0 4px 24px rgba(0,0,0,.4);
+}
+
+/* ═══════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font-family: inherit; cursor: pointer; }
+input, textarea { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ═══════════════════════════════════
+   LAYOUT
+═══════════════════════════════════ */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ═══════════════════════════════════
+   HEADER
+═══════════════════════════════════ */
+.app-header {
+  padding: 16px 18px 12px;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.logo em { color: var(--jade); font-style: normal; }
+.header-right { text-align: right; }
+.header-date  { font-size: 11px; color: var(--cream-dim); }
+.header-streak {
+  font-size: 12px; color: var(--amber);
+  font-weight: 500; margin-top: 1px;
+  display: flex; align-items: center; gap: 3px; justify-content: flex-end;
+}
+
+/* ═══════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════ */
+.app-nav {
+  position: fixed;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; max-width: 480px;
+  height: var(--nav-h);
+  background: rgba(19,24,22,.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+.nav-btn {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px;
+  background: none; border: none;
+  color: var(--cream-dim);
+  padding: 8px 4px;
+  min-height: 52px;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-btn.active { color: var(--amber); }
+.nav-btn.active::before {
+  content: '';
+  position: absolute; top: 0; left: 22%; right: 22%;
+  height: 2px;
+  background: var(--amber);
+  border-radius: 0 0 3px 3px;
+}
+.nav-btn .n-icon { font-size: 20px; transition: transform 0.2s; }
+.nav-btn.active .n-icon { transform: scale(1.1); }
+.nav-btn .n-label { font-size: 9px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; }
+
+/* ═══════════════════════════════════
+   SCREENS
+═══════════════════════════════════ */
+.screen {
+  padding: 12px 14px calc(var(--nav-h) + 16px);
+  display: none;
+  min-height: 100vh;
+}
+.screen.active {
+  display: block;
+  animation: fadeUp 0.22s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ═══════════════════════════════════
+   CARDS
+═══════════════════════════════════ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.card-title {
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 1.8px; text-transform: uppercase;
+  color: var(--cream-dim);
+  margin-bottom: 12px;
+}
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 21px; font-weight: 700;
+  color: var(--cream);
+  margin: 4px 0 14px;
+  letter-spacing: -0.3px;
+}
+
+/* ═══════════════════════════════════
+   PROGRESS RING
+═══════════════════════════════════ */
+.ring-wrap { display: flex; align-items: center; gap: 16px; padding: 4px 0; }
+.ring-svg { transform: rotate(-90deg); flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(232,168,53,.3)); }
+.ring-track { fill: none; stroke: var(--border); stroke-width: 7; }
+.ring-fill {
+  fill: none; stroke: var(--amber); stroke-width: 7; stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1);
+}
+.ring-fill.full { stroke: var(--jade); }
+.ring-info { flex: 1; }
+.ring-pct {
+  font-family: 'Playfair Display', serif;
+  font-size: 44px; font-weight: 700;
+  color: var(--amber); line-height: 1;
+  transition: color 0.5s;
+}
+.ring-pct.full { color: var(--jade); }
+.ring-label { font-size: 12px; color: var(--cream-dim); margin-top: 3px; }
+.ring-day   { font-size: 12px; color: var(--cream-dim); margin-top: 6px; font-weight: 300; }
+.ring-done  { font-size: 12px; color: var(--jade); margin-top: 4px; font-weight: 500; display: none; }
+.ring-done.show { display: block; }
+
+/* ═══════════════════════════════════
+   TIME BLOCK LABELS
+═══════════════════════════════════ */
+.t-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.6px;
+  text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px;
+  display: inline-block;
+  margin: 8px 0 5px;
+}
+.t-morning   { background: rgba(232,168,53,.14); color: var(--amber);  }
+.t-afternoon { background: rgba(82,176,138,.14);  color: var(--jade);   }
+.t-evening   { background: rgba(180,120,200,.14); color: var(--purple); }
+.t-night     { background: rgba(100,130,200,.14); color: var(--blue);   }
+
+/* ═══════════════════════════════════
+   TASK ITEMS
+═══════════════════════════════════ */
+.task {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.task:last-child { border-bottom: none; padding-bottom: 0; }
+.task:active { opacity: 0.6; }
+
+.task-cb {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 12px;
+  transition: all 0.22s cubic-bezier(.4,0,.2,1);
+  color: transparent;
+}
+.task.done .task-cb {
+  background: var(--jade);
+  border-color: var(--jade);
+  color: #fff;
+  transform: scale(1.05);
+}
+.task-icon { font-size: 17px; flex-shrink: 0; }
+.task-text {
+  flex: 1;
+  font-size: 13.5px; line-height: 1.3;
+  transition: color 0.2s;
+}
+.task.done .task-text { color: var(--cream-dim); text-decoration: line-through; }
+.task-tag {
+  font-size: 9px; padding: 2px 7px;
+  border-radius: 10px; letter-spacing: 0.4px;
+  text-transform: uppercase; font-weight: 600; flex-shrink: 0;
+}
+.tag-skin { background: rgba(232,168,53,.12); color: var(--amber); }
+.tag-diet { background: rgba(82,176,138,.12);  color: var(--jade);  }
+.tag-fit  { background: rgba(180,120,200,.12); color: var(--purple); }
+
+/* ═══════════════════════════════════
+   BONUS / EXTRAS
+═══════════════════════════════════ */
+.extra-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(232,168,53,.2);
+  background: rgba(232,168,53,.04);
+  border-radius: 12px; margin-bottom: 8px;
+  cursor: pointer; transition: all 0.2s;
+}
+.extra-card:last-child { margin-bottom: 0; }
+.extra-card:active { opacity: 0.6; }
+.extra-card.done { background: var(--jade-glow); border-color: rgba(82,176,138,.3); }
+.extra-icon { font-size: 20px; }
+.extra-text { flex: 1; font-size: 13px; line-height: 1.3; }
+.extra-check { font-size: 19px; }
+
+/* ═══════════════════════════════════
+   CONFETTI
+═══════════════════════════════════ */
+.confetti-wrap {
+  position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden;
+}
+.confetti-piece {
+  position: absolute; width: 10px; height: 10px; border-radius: 2px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ═══════════════════════════════════
+   AI CHAT
+═══════════════════════════════════ */
+/* Model picker */
+.model-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 13px; margin-bottom: 8px;
+  cursor: pointer; background: var(--surface);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.model-card:active { transform: scale(0.98); }
+.model-card.rec {
+  border-color: rgba(82,176,138,.45);
+  background: rgba(82,176,138,.06);
+}
+.model-card.resume-card {
+  border-color: rgba(232,168,53,.45);
+  background: rgba(232,168,53,.07);
+}
+.model-icon { font-size: 24px; flex-shrink: 0; }
+.model-name { font-size: 14px; font-weight: 500; color: var(--cream); }
+.model-meta { font-size: 11.5px; color: var(--cream-dim); margin-top: 2px; line-height: 1.4; }
+.badge-pill {
+  font-size: 9px; padding: 2px 7px; border-radius: 10px;
+  font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  margin-left: 6px; vertical-align: middle;
+}
+.badge-green { background: rgba(82,176,138,.2);  color: var(--jade);  }
+.badge-amber { background: rgba(232,168,53,.2);  color: var(--amber); }
+
+/* Download progress */
+.dl-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 24px 20px;
+  text-align: center; margin-bottom: 10px;
+}
+.dl-spinner { font-size: 44px; animation: spin 2s linear infinite; display: inline-block; margin-bottom: 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.progress-track { background: var(--border); border-radius: 20px; height: 7px; overflow: hidden; margin: 14px 0 6px; }
+.progress-fill  { background: var(--jade); height: 100%; border-radius: 20px; transition: width 0.3s ease; }
+
+/* Chat UI */
+.ai-status-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 10px;
+  background: var(--jade-glow);
+  border: 1px solid rgba(82,176,138,.3);
+  margin-bottom: 10px; font-size: 12px;
+}
+.ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--jade); flex-shrink: 0; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.quick-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.qbtn {
+  font-size: 11.5px; padding: 6px 12px;
+  border-radius: 20px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--cream-dim);
+  cursor: pointer; white-space: nowrap;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+.qbtn:active { color: var(--amber); border-color: var(--amber-dim); background: var(--amber-glow); }
+
+.chat-box { height: calc(100vh - 318px); min-height: 200px; overflow-y: auto; padding: 2px 0; display: flex; flex-direction: column; gap: 9px; }
+
+.msg { max-width: 88%; padding: 10px 13px; border-radius: 15px; font-size: 13.5px; line-height: 1.55; word-wrap: break-word; }
+.msg.user  { align-self: flex-end; background: var(--amber); color: #0c0e0d; font-weight: 500; border-bottom-right-radius: 4px; }
+.msg.ai    { align-self: flex-start; background: var(--card2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.msg.think { align-self: flex-start; background: var(--card2); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--cream-dim); font-style: italic; }
+.msg-time  { font-size: 9px; opacity: 0.6; margin-top: 4px; }
+.msg.user .msg-time { text-align: right; }
+
+.dots::after { content: '...'; animation: dots 1.2s infinite; }
+@keyframes dots { 0%,20%{content:'.';} 40%,60%{content:'..';} 80%,100%{content:'...';} }
+
+.chat-input-row {
+  display: flex; gap: 8px; align-items: flex-end; margin-top: 10px;
+}
+.chat-ta {
+  flex: 1;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 13px; padding: 11px 13px;
+  color: var(--cream); font-size: 13.5px;
+  resize: none; max-height: 110px; outline: none;
+  line-height: 1.4; transition: border-color 0.2s;
+}
+.chat-ta:focus { border-color: var(--amber-dim); }
+.chat-ta::placeholder { color: var(--cream-dim); }
+.send-btn {
+  width: 44px; height: 44px; border-radius: 13px;
+  background: var(--amber); border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #0c0e0d; flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.send-btn:active { transform: scale(0.93); }
+.send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+/* ═══════════════════════════════════
+   WEIGHT
+═══════════════════════════════════ */
+.weight-input-row { display: flex; gap: 10px; align-items: stretch; }
+.wt-inp {
+  flex: 1; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 13px;
+  padding: 14px; color: var(--cream);
+  font-size: 24px; font-weight: 300; outline: none;
+  text-align: center; transition: border-color 0.2s;
+}
+.wt-inp:focus { border-color: var(--jade); }
+.wt-save {
+  padding: 0 20px; background: var(--jade);
+  border: none; border-radius: 13px; color: #0c0e0d;
+  font-size: 14px; font-weight: 600; transition: opacity 0.2s;
+}
+.wt-save:active { opacity: 0.75; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.stat-box  { background: var(--surface); border-radius: var(--r-sm); padding: 12px; }
+.stat-val  { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--jade); }
+.stat-lbl  { font-size: 10px; color: var(--cream-dim); margin-top: 3px; }
+
+.log-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.log-row:last-child { border-bottom: none; }
+
+/* ═══════════════════════════════════
+   STREAK
+═══════════════════════════════════ */
+.streak-hero { text-align: center; padding: 12px 0 10px; }
+.streak-num  {
+  font-family: 'Playfair Display', serif;
+  font-size: 80px; font-weight: 700;
+  color: var(--amber); line-height: 1;
+  text-shadow: 0 0 40px rgba(232,168,53,.3);
+}
+.streak-sub { font-size: 13px; color: var(--cream-dim); margin-top: 6px; }
+
+.heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.heat-cell { aspect-ratio: 1; border-radius: 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; transition: transform 0.15s; }
+.heat-cell:active { transform: scale(0.9); }
+.hd { font-size: 8px; letter-spacing: 0.4px; text-transform: uppercase; }
+.hp { font-size: 10px; font-weight: 600; }
+.h0   { background: var(--border);              color: var(--cream-dim); }
+.h25  { background: rgba(82,176,138,.2);         color: var(--jade); }
+.h50  { background: rgba(82,176,138,.4);         color: var(--jade); }
+.h75  { background: rgba(82,176,138,.65);        color: #0c0e0d; }
+.h100 { background: var(--jade);                color: #0c0e0d; }
+
+.badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.badge-card {
+  background: var(--surface); border-radius: 13px;
+  padding: 14px 10px; text-align: center;
+  border: 1px solid var(--border);
+  opacity: 0.3; transition: opacity 0.3s, border-color 0.3s, transform 0.2s;
+}
+.badge-card.earned { opacity: 1; border-color: var(--amber-dim); }
+.badge-card.earned:active { transform: scale(0.96); }
+.badge-em { font-size: 28px; margin-bottom: 6px; }
+.badge-n  { font-size: 11px; font-weight: 600; color: var(--amber); margin-bottom: 3px; }
+.badge-d  { font-size: 10px; color: var(--cream-dim); line-height: 1.35; }
+
+/* ═══════════════════════════════════
+   ROUTINE GUIDE
+═══════════════════════════════════ */
+.rt-section { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim); margin: 12px 0 6px; }
+.rt-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(38,50,48,.6); font-size: 13px; line-height: 1.4; }
+.rt-row:last-child { border-bottom: none; padding-bottom: 0; }
+.rt-ic { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.code-block { background: var(--surface); border-radius: var(--r-sm); padding: 13px; font-family: 'Courier New', monospace; font-size: 11.5px; color: var(--jade); line-height: 1.75; white-space: pre-wrap; word-break: break-all; margin-top: 10px; }
+
+/* ═══════════════════════════════════
+   UTILITY
+═══════════════════════════════════ */
+.note-ok   { padding: 10px 13px; background: var(--jade-glow);  border: 1px solid rgba(82,176,138,.25);  border-radius: 10px; font-size: 12px; color: var(--jade);   line-height: 1.55; margin-top: 10px; }
+.note-warn { padding: 10px 13px; background: rgba(224,104,104,.08); border: 1px solid rgba(224,104,104,.25); border-radius: 10px; font-size: 12px; color: var(--danger); line-height: 1.55; margin-top: 10px; }
+.note-info { padding: 10px 13px; background: var(--amber-glow); border: 1px solid rgba(232,168,53,.2);   border-radius: 10px; font-size: 12px; color: var(--amber); line-height: 1.55; margin-top: 10px; }
+
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 12px);
+  left: 50%; transform: translateX(-50%) translateY(16px);
+  padding: 9px 20px; border-radius: 22px;
+  font-size: 13px; font-weight: 500;
+  opacity: 0; transition: all 0.24s;
+  z-index: 300; white-space: nowrap; pointer-events: none;
+  box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="logo">Glow<em>Gain</em> <span style="font-size:17px">🌿</span></div>
+    <div class="header-right">
+      <div class="header-date"  id="hdr-date"></div>
+      <div class="header-streak" id="hdr-streak"></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="s-today"   class="screen active"></div>
+    <div id="s-coach"   class="screen"></div>
+    <div id="s-weight"  class="screen"></div>
+    <div id="s-streak"  class="screen"></div>
+    <div id="s-routine" class="screen"></div>
+  </main>
+
+  <nav class="app-nav">
+    <button class="nav-btn active" onclick="go('today',this)">
+      <span class="n-icon">📋</span><span class="n-label">Today</span>
+    </button>
+    <button class="nav-btn" onclick="go('coach',this)">
+      <span class="n-icon">🧠</span><span class="n-label">Coach</span>
+    </button>
+    <button class="nav-btn" onclick="go('weight',this)">
+      <span class="n-icon">⚖️</span><span class="n-label">Weight</span>
+    </button>
+    <button class="nav-btn" onclick="go('streak',this)">
+      <span class="n-icon">🔥</span><span class="n-label">Streak</span>
+    </button>
+    <button class="nav-btn" onclick="go('routine',this)">
+      <span class="n-icon">📖</span><span class="n-label">Guide</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="confetti-wrap" id="confetti"></div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════
+   DATA DEFINITIONS
+═══════════════════════════════════════════════════ */
+const D_LONG  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const D_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+const ROUTINE = {
+  morning: [
+    { id:'cet_am',  label:'Cetaphil face wash',          cat:'skin', icon:'🧼', tip:'Use lukewarm water, gentle circular motions.' },
+    { id:'pond_am', label:"Pond's Gel moisturizer",      cat:'skin', icon:'✨', tip:'Apply while face is still slightly damp.' },
+    { id:'uvr',     label:'UVROZ sunscreen (SPF 50)',    cat:'skin', icon:'☀️', tip:'Apply 15 min before stepping out.' },
+    { id:'bfast',   label:'2 chapatis + 2 eggs',         cat:'diet', icon:'🍳', tip:'Protein at breakfast reduces hunger all day.' },
+  ],
+  afternoon: [
+    { id:'lunch',   label:'Rice + dal + vegetables',     cat:'diet', icon:'🍱', tip:'Aim for a fist-sized portion of each.' },
+    { id:'uvr2',    label:'Reapply sunscreen (outdoors)',cat:'skin', icon:'🌤️', tip:'Every 2 hours outdoors for protection.' },
+  ],
+  evening: [
+    { id:'snack',   label:'Milk + bananas (300+ cal)',   cat:'diet', icon:'🍌', tip:'Full-fat milk + 2–3 bananas = easy calories.' },
+    { id:'workout', label:'Workout session',             cat:'fit',  icon:'💪', tip:'Compound lifts: squats, push-ups, rows.', days:[1,3,5] },
+  ],
+  night: [
+    { id:'dinner',  label:'Chapatis + sabzi / dal',      cat:'diet', icon:'🥘', tip:'Eat until satisfied, not stuffed.' },
+    { id:'cet_pm',  label:'Cetaphil face wash (PM)',     cat:'skin', icon:'🧼', tip:'Removes all sunscreen and pollution.' },
+    { id:'pond_pm', label:"Pond's Gel night moisturizer",cat:'skin', icon:'🌙', tip:'Night moisturizer aids skin repair during sleep.' },
+  ],
+};
+
+const EXTRAS = [
+  { id:'scrub',      label:'Sugar face scrub (gentle)',  days:[3,6], icon:'💆', tip:'Mix sugar + honey, massage 60 s, rinse.' },
+  { id:'extra_prot', label:'Chicken / fish meal',        days:[0],   icon:'🍗', tip:'Sunday protein boost helps muscle growth.' },
+];
+
+const BLOCK_META = {
+  morning:   { label:'Morning',   cls:'t-morning'   },
+  afternoon: { label:'Afternoon', cls:'t-afternoon' },
+  evening:   { label:'Evening',   cls:'t-evening'   },
+  night:     { label:'Night',     cls:'t-night'     },
+};
+
+const AI_MODELS = [
+  {
+    id:   'HuggingFaceTB/SmolLM2-135M-Instruct',
+    name: 'SmolLM2 135M',
+    icon: '⚡',
+    size: '~270 MB',
+    note: 'Fastest · Best for Redmi 9i · Loads in seconds after first download',
+    rec:  true,
+    prompt: 'compact',   // use shorter system prompt
+  },
+  {
+    id:   'HuggingFaceTB/SmolLM2-360M-Instruct',
+    name: 'SmolLM2 360M',
+    icon: '🏃',
+    size: '~720 MB',
+    note: 'Smarter replies · Good balance of speed and quality',
+    rec:  false,
+    prompt: 'compact',
+  },
+  {
+    id:   'Xenova/TinyLlama-1.1B-Chat-v1.0',
+    name: 'TinyLlama 1.1B',
+    icon: '🐢',
+    size: '~637 MB',
+    note: 'Best quality · Slower on phone · Best instruction following',
+    rec:  false,
+    prompt: 'full',
+  },
+];
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL STATE
+═══════════════════════════════════════════════════ */
+const NOW       = new Date();
+const TODAY     = NOW.toISOString().split('T')[0];
+const DOW       = NOW.getDay();
+
+// AI
+let ai          = null;        // Transformers.js pipeline instance
+let aiState     = 'idle';      // idle | loading | ready | error
+let aiModelId   = null;
+let aiPromptType= 'compact';
+let aiRunning   = false;
+let chatMounted = false;
+let chatHistory = [];
+let dlProgress  = {};
+
+/* ═══════════════════════════════════════════════════
+   STORAGE HELPERS
+═══════════════════════════════════════════════════ */
+const storage = {
+  get:    (k, def={}) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):def; } catch{return def;} },
+  set:    (k, v)      => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){console.warn('Storage full',e);} },
+  getDay: (date)      => storage.get('gg_d_'+date, {done:[], extras:{}}),
+  setDay: (date, v)   => storage.set('gg_d_'+date, v),
+  getWt:  ()          => storage.get('gg_wt', {}),
+  setWt:  (v)         => storage.set('gg_wt', v),
+  model:  {
+    get:  ()  => localStorage.getItem('gg_model_id'),
+    set:  (id)=> localStorage.setItem('gg_model_id', id),
+  },
+};
+
+/* ═══════════════════════════════════════════════════
+   TASK HELPERS
+═══════════════════════════════════════════════════ */
+function allTasksForDay(dow = DOW) {
+  const tasks = [];
+  for (const [block, list] of Object.entries(ROUTINE))
+    for (const t of list)
+      if (!t.days || t.days.includes(dow))
+        tasks.push({ ...t, block });
+  return tasks;
+}
+
+function pctForDate(dateKey) {
+  const dow  = new Date(dateKey + 'T12:00:00').getDay();
+  const all  = allTasksForDay(dow);
+  if (!all.length) return 0;
+  const { done } = storage.getDay(dateKey);
+  return Math.round(done.filter(id => all.some(t => t.id === id)).length / all.length * 100);
+}
+
+/* ═══════════════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════════════ */
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = type === 'ok' ? 'var(--jade)' : type === 'warn' ? 'var(--amber)' : 'var(--danger)';
+  el.style.color = type === 'ok' ? '#0c0e0d' : '#0c0e0d';
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2300);
+}
+
+function confetti() {
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  const colors = ['#e8a835','#52b08a','#b478c8','#6482c8','#e06868','#e8dcc8'];
+  for (let i = 0; i < 48; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      animation-duration:${1.2+Math.random()*1.2}s;
+      animation-delay:${Math.random()*.4}s;`;
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+  }
+}
+
+function fmtTime() {
+  return NOW.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+}
+
+/* ═══════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════ */
+function go(name, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + name).classList.add('active');
+  btn.classList.add('active');
+  updateHeader();
+  const renders = { today: renderToday, coach: renderCoach, weight: renderWeight, streak: renderStreak, routine: renderRoutine };
+  renders[name]?.();
+}
+
+function updateHeader() {
+  document.getElementById('hdr-date').textContent = NOW.toLocaleDateString('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+  let streak = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(NOW); d.setDate(d.getDate() - i);
+    if (pctForDate(d.toISOString().split('T')[0]) >= 80) streak++;
+    else break;
+  }
+  const hdrStr = document.getElementById('hdr-streak');
+  if (streak > 0) { hdrStr.innerHTML = `🔥 ${streak}-day streak`; hdrStr.style.display = 'flex'; }
+  else            { hdrStr.style.display = 'none'; }
+}
+
+/* ═══════════════════════════════════════════════════
+   SCREEN 1 — TODAY
+═══════════════════════════════════════════════════ */
+function renderToday() {
+  const dayData = storage.getDay(TODAY);
+  const pct     = pctForDate(TODAY);
+  const R = 40, C = 2 * Math.PI * R;
+  const offset  = C - (pct / 100) * C;
+  const full    = pct === 100;
+
+  // Build task blocks
+  let blockHtml = '';
+  for (const [block, meta] of Object.entries(BLOCK_META)) {
+    const tasks = ROUTINE[block].filter(t => !t.days || t.days.includes(DOW));
+    if (!tasks.length) continue;
+    blockHtml += `<div class="${meta.cls} t-label">${meta.label}</div>`;
+    for (const t of tasks) {
+      const done = dayData.done.includes(t.id);
+      blockHtml += `
+        <div class="task ${done ? 'done' : ''}" onclick="toggleTask('${t.id}')">
+          <div class="task-cb">${done ? '✓' : ''}</div>
+          <span class="task-icon">${t.icon}</span>
+          <div style="flex:1">
+            <div class="task-text">${t.label}</div>
+            ${done ? '' : `<div style="font-size:11px;color:var(--cream-dim);margin-top:1px">${t.tip}</div>`}
+          </div>
+          <span class="task-tag tag-${t.cat === 'skin' ? 'skin' : t.cat === 'diet' ? 'diet' : 'fit'}">${t.cat}</span>
+        </div>`;
+    }
+  }
+
+  // Extras for today
+  const todayExtras = EXTRAS.filter(e => e.days.includes(DOW));
+  let extraHtml = '';
+  if (todayExtras.length) {
+    extraHtml = `<div class="card"><p class="card-title">Today's Extras ✨</p>`;
+    for (const e of todayExtras) {
+      const done = dayData.extras[e.id];
+      extraHtml += `
+        <div class="extra-card ${done ? 'done' : ''}" onclick="toggleExtra('${e.id}')">
+          <span class="extra-icon">${e.icon}</span>
+          <div style="flex:1">
+            <div class="extra-text">${e.label}</div>
+            <div style="font-size:11px;color:var(--cream-dim);margin-top:1px">${e.tip}</div>
+          </div>
+          <span class="extra-check">${done ? '✅' : '⬜'}</span>
+        </div>`;
+    }
+    extraHtml += '</div>';
+  }
+
+  document.getElementById('s-today').innerHTML = `
+    <div class="card" style="margin-top:4px">
+      <div class="ring-wrap">
+        <svg width="96" height="96" class="ring-svg" viewBox="0 0 96 96">
+          <circle class="ring-track" cx="48" cy="48" r="${R}"/>
+          <circle class="ring-fill ${full ? 'full' : ''}" cx="48" cy="48" r="${R}"
+            stroke-dasharray="${C.toFixed(2)}"
+            stroke-dashoffset="${offset.toFixed(2)}"/>
+        </svg>
+        <div class="ring-info">
+          <div class="ring-pct ${full ? 'full' : ''}">${pct}%</div>
+          <div class="ring-label">of today's routine done</div>
+          <div class="ring-day">${D_LONG[DOW]}</div>
+          <div class="ring-done ${full ? 'show' : ''}">🎉 Perfect day! Amazing work.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Routine Checklist</p>
+      ${blockHtml}
+    </div>
+    ${extraHtml}`;
+}
+
+function toggleTask(id) {
+  const d = storage.getDay(TODAY);
+  const i = d.done.indexOf(id);
+  const wasComplete = pctForDate(TODAY) === 100;
+  if (i === -1) d.done.push(id);
+  else          d.done.splice(i, 1);
+  storage.setDay(TODAY, d);
+  const nowComplete = pctForDate(TODAY) === 100;
+  if (nowComplete && !wasComplete) { toast('🎉 100% complete! Amazing!', 'ok'); confetti(); }
+  else if (i === -1)                { toast('✓ Done!'); }
+  renderToday();
+  updateHeader();
+}
+
+function toggleExtra(id) {
+  const d = storage.getDay(TODAY);
+  d.extras[id] = !d.extras[id];
+  storage.setDay(TODAY, d);
+  if (d.extras[id]) toast('✓ Extra logged!');
+  renderToday();
+}
+
+/* ═══════════════════════════════════════════════════
+   SCREEN 2 — AI COACH
+   ─────────────────────────────────────────────────
+   System Prompt Architecture:
+   • Two variants: "compact" (135M/360M) and "full" (1.1B+)
+   • Compact: shorter, very direct — small models need brevity
+   • Full: richer context, more nuanced coaching instructions
+   • Both are rebuilt FRESH each message with live stats
+═══════════════════════════════════════════════════ */
+
+function getStats() {
+  const d       = storage.getDay(TODAY);
+  const all     = allTasksForDay();
+  const done    = all.filter(t => d.done.includes(t.id));
+  const pending = all.filter(t => !d.done.includes(t.id));
+  const pct     = pctForDate(TODAY);
+  const wt      = storage.getWt()[TODAY];
+
+  // Last 7-day streak
+  let streak = 0;
+  for (let i = 0; i < 7; i++) {
+    const dt = new Date(NOW); dt.setDate(dt.getDate() - i);
+    if (pctForDate(dt.toISOString().split('T')[0]) >= 80) streak++;
+    else break;
+  }
+
+  return { d, all, done, pending, pct, wt, streak };
+}
+
+function buildSystemPrompt(type = 'compact') {
+  const { done, pending, pct, wt, streak } = getStats();
+  const isWorkoutDay = [1,3,5].includes(DOW);
+  const doneStr    = done.length    ? done.map(t=>t.label).join(', ')    : 'nothing yet';
+  const pendingStr = pending.length ? pending.map(t=>t.label).join(', ') : 'all done!';
+
+  if (type === 'compact') {
+    // ── COMPACT PROMPT (SmolLM2 135M / 360M) ──────────────────────────
+    // Small models work best with short, explicit, structured prompts.
+    // Instructions are crisp, context is minimal but live.
+    return `You are GlowGain AI, a health coach. Be warm, short, specific.
+
+ROUTINE: Cetaphil wash → Pond's Gel → UVROZ sunscreen → 2 chapatis+2 eggs | Rice+dal+veg lunch | Milk+bananas snack${isWorkoutDay?' + workout':''} | Chapatis+sabzi dinner → Cetaphil wash → Pond's Gel night
+GOAL: +0.3-0.5 kg/week, clear skin.
+
+TODAY (${D_LONG[DOW]}):
+Done: ${doneStr}
+Still to do: ${pendingStr}
+Completion: ${pct}%
+Weight: ${wt ? wt+'kg' : 'not logged'}
+Streak: ${streak} days
+
+Rules: 2-4 sentences only. Reference their actual tasks. End with 1 question.`;
+  }
+
+  // ── FULL PROMPT (TinyLlama 1.1B+) ────────────────────────────────────
+  // Larger models can follow richer context and nuanced coaching instructions.
+  return `You are GlowGain AI — a dedicated personal health coach embedded in the user's daily tracker app on their phone.
+
+## YOUR ROLE
+Coach the user on their exact skincare and weight-gain routine. You are warm, encouraging, and precise. You ALWAYS reference their real data — never give generic advice.
+
+## USER'S FULL ROUTINE
+**Morning:** Cetaphil Gentle face wash → Pond's Light Moisturizer Gel → UVROZ SPF50 sunscreen → Breakfast: 2 chapatis + 2 boiled/scrambled eggs
+**Afternoon:** Lunch: rice + dal + vegetables; reapply sunscreen if outdoors
+**Evening:** Snack: full-fat milk + 2–3 bananas (300+ cal)${isWorkoutDay ? ' + WORKOUT DAY (Mon/Wed/Fri)' : ''}
+**Night:** Dinner: 2–3 chapatis + sabzi or dal → Cetaphil face wash (removes sunscreen) → Pond's Gel night moisturizer
+**Weekly extras:** Sugar scrub on Wed & Sat | Chicken/fish on Sundays
+
+## GOALS
+- Weight gain: +0.3–0.5 kg per week (lean bulk, not fat gain)
+- Skin: clear, hydrated, glowing — no pimples, even tone
+
+## TODAY'S LIVE STATS — ${D_LONG[DOW].toUpperCase()}
+| Item | Value |
+|------|-------|
+| Completion | ${pct}% (${done.length}/${done.length + pending.length} tasks) |
+| Done | ${doneStr} |
+| Still pending | ${pendingStr} |
+| Weight logged | ${wt ? wt + ' kg' : 'not logged yet'} |
+| Current streak | ${streak} days at 80%+ |
+
+## COACHING RULES
+1. ALWAYS acknowledge what they've already done today (use real task names above)
+2. If they're behind, be encouraging — never guilt-trip
+3. If they're doing well, celebrate it genuinely
+4. Reference the specific tasks by name in your reply
+5. One focused suggestion at a time — never overwhelm
+6. Keep reply to 3–5 sentences (mobile-friendly)
+7. End with exactly ONE brief, specific question
+8. NEVER give generic health advice — only things relevant to their routine above
+
+## FORBIDDEN
+- Do not mention other apps, AI systems, or say you are an AI
+- Do not give advice outside their specific routine
+- Do not give more than one suggestion per reply
+- Do not write long paragraphs`;
+}
+
+/* ── Model Loading ─────────────────────────────── */
+async function loadModel(modelId) {
+  const modelDef  = AI_MODELS.find(m => m.id === modelId);
+  aiState         = 'loading';
+  aiModelId       = modelId;
+  aiPromptType    = modelDef?.prompt || 'compact';
+  dlProgress      = {};
+  storage.model.set(modelId);
+  chatMounted     = false;
+  chatHistory     = [];
+  renderCoach();
+
+  try {
+    const { pipeline, env } = await import(
+      'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.2/dist/transformers.min.js'
+    );
+    env.allowLocalModels = false;
+    env.useBrowserCache  = true;   // cached after first download — fully offline thereafter
+
+    ai = await pipeline('text-generation', modelId, {
+      dtype: 'q4',
+      progress_callback: info => {
+        if (info.status === 'download' || info.status === 'downloading') {
+          dlProgress[info.file || info.name || 'model'] = info.progress || 0;
+          refreshDlProgress();
+        }
+      },
+    });
+
+    aiState = 'ready';
+    renderCoach();
+  } catch (err) {
+    console.error('[GlowGain AI Load]', err);
+    aiState = 'error';
+    renderCoach();
+  }
+}
+
+function refreshDlProgress() {
+  const bar  = document.getElementById('dl-bar');
+  const pctL = document.getElementById('dl-pct');
+  const fileL = document.getElementById('dl-file');
+  if (!bar) return;
+  const vals = Object.values(dlProgress);
+  const pct  = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  bar.style.width     = pct.toFixed(1) + '%';
+  pctL.textContent    = pct.toFixed(0) + '%';
+  const last = Object.keys(dlProgress).pop() || '';
+  fileL.textContent   = last.split('/').pop();
+}
+
+/* ── Render Coach Screen ───────────────────────── */
+function renderCoach() {
+  const el = document.getElementById('s-coach');
+  const cachedId    = storage.model.get();
+  const cachedModel = AI_MODELS.find(m => m.id === cachedId);
+
+  // ── IDLE: model picker ──
+  if (aiState === 'idle') {
+    el.innerHTML = `
+      <h2 class="section-heading">AI Coach 🧠</h2>
+      <div class="card" style="text-align:center;padding:20px 16px">
+        <div style="font-size:46px;margin-bottom:12px">🤖</div>
+        <div style="font-family:'Playfair Display',serif;font-size:19px;margin-bottom:8px">Runs 100% on your phone</div>
+        <div style="font-size:12.5px;color:var(--cream-dim);line-height:1.75">
+          Download once → cached in browser cache → works<br>
+          <strong style="color:var(--amber)">100% offline forever</strong> after that.<br>
+          The AI reads your <strong style="color:var(--jade)">live stats</strong> on every message.
+        </div>
+      </div>
+
+      ${cachedModel ? `
+        <div class="model-card resume-card" onclick="loadModel('${cachedModel.id}')">
+          <span class="model-icon">⚡</span>
+          <div style="flex:1">
+            <div class="model-name">Resume ${cachedModel.name}
+              <span class="badge-pill badge-amber">Cached</span>
+            </div>
+            <div class="model-meta">Previously used · loads instantly from browser cache</div>
+          </div>
+          <span style="font-size:20px;color:var(--amber)">›</span>
+        </div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:10px 2px 8px">Or pick a different model</div>
+      ` : '<div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:4px 2px 10px">Choose a model to download</div>'}
+
+      ${AI_MODELS.map(m => `
+        <div class="model-card ${m.rec ? 'rec' : ''}" onclick="loadModel('${m.id}')">
+          <span class="model-icon">${m.icon}</span>
+          <div style="flex:1">
+            <div class="model-name">${m.name}
+              ${m.rec ? '<span class="badge-pill badge-green">Recommended</span>' : ''}
+            </div>
+            <div class="model-meta">${m.size} · ${m.note}</div>
+          </div>
+          <span style="font-size:20px;color:var(--cream-dim)">›</span>
+        </div>`).join('')}
+
+      <div class="note-info" style="margin-top:4px">
+        💡 All models use 4-bit quantization (q4) to fit in phone RAM. SmolLM2 135M is the best balance for Redmi 9i (2 GB RAM).
+      </div>`;
+    return;
+  }
+
+  // ── LOADING ──
+  if (aiState === 'loading') {
+    const m = AI_MODELS.find(x => x.id === aiModelId) || { name: aiModelId, size: '?' };
+    el.innerHTML = `
+      <h2 class="section-heading">Downloading AI 🧠</h2>
+      <div class="dl-card">
+        <div class="dl-spinner">⚙️</div>
+        <div style="font-size:16px;font-weight:500;color:var(--cream);margin-bottom:4px">${m.name}</div>
+        <div style="font-size:12px;color:var(--cream-dim);margin-bottom:4px">${m.size} · first download only</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="dl-bar" style="width:0%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px">
+          <span id="dl-file" style="font-size:10px;color:var(--cream-dim);max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left"></span>
+          <span id="dl-pct"  style="font-size:13px;color:var(--jade);font-weight:600">0%</span>
+        </div>
+        <div style="font-size:11.5px;color:var(--cream-dim);margin-top:18px;line-height:1.7">
+          Keep screen on · stay connected to Wi-Fi<br>
+          <strong style="color:var(--amber)">After this, zero internet needed. Ever.</strong> 📱
+        </div>
+      </div>`;
+    return;
+  }
+
+  // ── ERROR ──
+  if (aiState === 'error') {
+    el.innerHTML = `
+      <h2 class="section-heading">AI Coach 🧠</h2>
+      <div class="card" style="text-align:center;padding:26px 16px">
+        <div style="font-size:40px;margin-bottom:12px">😕</div>
+        <div style="font-size:15px;color:var(--danger);margin-bottom:6px">Download failed</div>
+        <div style="font-size:12.5px;color:var(--cream-dim);line-height:1.65;margin-bottom:20px">
+          Make sure you're on Wi-Fi with stable connection.<br>
+          Check free storage: need ~300–750 MB.<br>
+          If on low RAM (&lt; 2 GB), stick to SmolLM2 135M.
+        </div>
+        <button onclick="aiState='idle';renderCoach()" style="background:var(--amber);color:#0c0e0d;border:none;border-radius:13px;padding:12px 28px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">
+          ← Try Again
+        </button>
+      </div>`;
+    return;
+  }
+
+  // ── READY: chat interface ──
+  if (aiState === 'ready' && !chatMounted) {
+    const m = AI_MODELS.find(x => x.id === aiModelId) || { name: 'AI', icon: '🤖' };
+    el.innerHTML = `
+      <div class="ai-status-bar">
+        <div class="ai-dot"></div>
+        <span style="flex:1;color:var(--jade)">${m.icon} ${m.name} — running on-device</span>
+        <button onclick="aiState='idle';ai=null;chatMounted=false;renderCoach()"
+          style="background:none;border:none;color:var(--cream-dim);font-size:11px;cursor:pointer;padding:2px 4px">
+          Change
+        </button>
+      </div>
+      <div class="quick-btns">
+        <button class="qbtn" onclick="qsend('How am I doing today?')">📊 Check-in</button>
+        <button class="qbtn" onclick="qsend('Motivate me to finish!')">💫 Motivate</button>
+        <button class="qbtn" onclick="qsend('What should I eat right now?')">🍽️ Eat what?</button>
+        <button class="qbtn" onclick="qsend('Any skincare tip for today?')">✨ Skin tip</button>
+      </div>
+      <div class="card" style="padding:12px">
+        <div id="chat-box" class="chat-box">
+          <div class="msg ai">
+            Hey! I'm your GlowGain Coach 🌿<br>
+            Running 100% on your phone — no internet needed. I can see your real progress and stats today. What's on your mind?
+            <div class="msg-time">${fmtTime()}</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chat-in" class="chat-ta" placeholder="Ask your coach…" rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px'"></textarea>
+        <button id="send-btn" class="send-btn" onclick="sendChat()">➤</button>
+      </div>`;
+    chatMounted = true;
+  }
+}
+
+/* ── Message Rendering ─────────────────────────── */
+function renderMsgs() {
+  const box = document.getElementById('chat-box');
+  if (!box) return;
+  box.innerHTML = chatHistory.map(m =>
+    `<div class="msg ${m.role === 'user' ? 'user' : 'ai'}">
+      ${m.content.replace(/\n/g, '<br>')}
+      <div class="msg-time">${m.time || ''}</div>
+    </div>`
+  ).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function qsend(msg) { await sendMsg(msg); }
+
+async function sendChat() {
+  const inp = document.getElementById('chat-in');
+  const msg = inp?.value?.trim();
+  if (!msg) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+  await sendMsg(msg);
+}
+
+async function sendMsg(msg) {
+  if (aiRunning || !ai) return;
+  aiRunning = true;
+  const btn = document.getElementById('send-btn');
+  if (btn) btn.disabled = true;
+
+  chatHistory.push({ role: 'user', content: msg, time: fmtTime() });
+  renderMsgs();
+
+  const box = document.getElementById('chat-box');
+  const thinking = document.createElement('div');
+  thinking.className = 'msg think';
+  thinking.innerHTML = 'Thinking<span class="dots"></span>';
+  box?.appendChild(thinking);
+  box?.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+
+  try {
+    // ── SYSTEM PROMPT rebuilt fresh with live stats ──────────────────
+    const sysPrompt = buildSystemPrompt(aiPromptType);
+
+    const messages = [
+      { role: 'system',    content: sysPrompt },
+      ...chatHistory.slice(-8),  // keep conversation context
+    ];
+
+    const output = await ai(messages, {
+      max_new_tokens:   180,
+      temperature:      0.72,
+      repetition_penalty: 1.15,
+      do_sample:        true,
+      return_full_text: false,
+    });
+
+    // Parse Transformers.js v3 response (messages format)
+    let reply = '';
+    const gen = output[0]?.generated_text;
+    if (Array.isArray(gen)) {
+      const last = gen.at(-1);
+      reply = typeof last === 'string' ? last : (last?.content || '');
+    } else {
+      reply = typeof gen === 'string' ? gen : '';
+    }
+
+    // Strip template tokens some models leak
+    reply = reply
+      .replace(/<\|[^|]+\|>/g, '')
+      .replace(/^(assistant|ASSISTANT|GlowGain AI|Coach):\s*/i, '')
+      .replace(/\[INST\].*?\[\/INST\]/gs, '')
+      .trim();
+
+    if (!reply || reply.length < 3) reply = "I'm still warming up — could you rephrase that?";
+
+    chatHistory.push({ role: 'assistant', content: reply, time: fmtTime() });
+  } catch (err) {
+    console.error('[AI generate]', err);
+    chatHistory.push({ role: 'assistant', content: "Something went wrong generating a reply. Try again!", time: fmtTime() });
+  }
+
+  thinking.remove();
+  aiRunning = false;
+  if (btn) btn.disabled = false;
+  renderMsgs();
+}
+
+/* ═══════════════════════════════════════════════════
+   SCREEN 3 — WEIGHT
+═══════════════════════════════════════════════════ */
+function renderWeight() {
+  const log     = storage.getWt();
+  const entries = Object.entries(log).sort(([a], [b]) => a.localeCompare(b));
+  const last7   = entries.slice(-7);
+  const weights = last7.map(([, v]) => parseFloat(v)).filter(Boolean);
+  const todayWt = log[TODAY] || '';
+  const latest  = weights[weights.length - 1];
+  const weekChg = weights.length >= 2 ? (latest - weights[0]).toFixed(1) : null;
+
+  // SVG chart
+  let chartHtml = `
+    <div style="text-align:center;padding:24px 0;color:var(--cream-dim)">
+      <div style="font-size:34px;margin-bottom:8px">📈</div>
+      <div style="font-size:13px">Log 2+ days to see your progress trend</div>
+    </div>`;
+  if (weights.length >= 2) {
+    const W = 290, H = 92;
+    const mn = Math.min(...weights) - 0.5, mx = Math.max(...weights) + 0.5;
+    const xs = W / (weights.length - 1);
+    const Y  = w => H - ((w - mn) / (mx - mn)) * H;
+    const pts = weights.map((w, i) => `${(i * xs).toFixed(1)},${Y(w).toFixed(1)}`).join(' ');
+    const dots = weights.map((w, i) => {
+      const x = (i * xs).toFixed(1), y = Y(w).toFixed(1);
+      return `<circle cx="${x}" cy="${y}" r="5" fill="var(--jade)" stroke="var(--card)" stroke-width="2.5"/>
+              <text x="${x}" y="${(parseFloat(y) - 10).toFixed(1)}" text-anchor="middle" font-size="9.5" fill="var(--jade)" font-weight="600">${w.toFixed(1)}</text>`;
+    }).join('');
+    const xlbls = last7.map(([k], i) => {
+      const d = new Date(k + 'T12:00:00');
+      return `<text x="${(i * xs).toFixed(1)}" y="${H + 17}" text-anchor="middle" font-size="9" fill="var(--cream-dim)">${D_SHORT[d.getDay()]}</text>`;
+    }).join('');
+    chartHtml = `<svg width="100%" viewBox="-5 -20 ${W + 10} ${H + 30}" style="overflow:visible;display:block">
+      <polyline points="${pts}" fill="none" stroke="var(--jade)" stroke-width="2.5" stroke-linejoin="round"/>
+      ${dots}${xlbls}
+    </svg>`;
+  }
+
+  const noteHtml = weekChg !== null
+    ? (parseFloat(weekChg) < 0.3
+        ? `<div class="note-warn">⚠️ Gain below +0.3 kg this week. Add one extra egg, banana or glass of milk per day — small tweaks compound quickly!</div>`
+        : `<div class="note-ok">✅ On track! +${weekChg} kg this week — right in the lean bulk sweet spot. Keep going!</div>`)
+    : '';
+
+  document.getElementById('s-weight').innerHTML = `
+    <h2 class="section-heading">Weight Log</h2>
+    <div class="card">
+      <p class="card-title">Log today's weight (kg)</p>
+      <div class="weight-input-row">
+        <input type="number" id="wt-inp" class="wt-inp"
+          placeholder="${todayWt || '60.0'}"
+          value="${todayWt}" step="0.1" min="20" max="300">
+        <button class="wt-save" onclick="saveWeight()">Save</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">7-Day Trend</p>
+      ${chartHtml}
+      ${weights.length >= 2 ? `
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-val">${latest ? latest.toFixed(1) + ' kg' : '—'}</div>
+            <div class="stat-lbl">Current weight</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" style="color:${parseFloat(weekChg) > 0 ? 'var(--jade)' : 'var(--danger)'}">
+              ${weekChg !== null ? (parseFloat(weekChg) > 0 ? '+' : '') + weekChg + ' kg' : '—'}
+            </div>
+            <div class="stat-lbl">7-day change</div>
+          </div>
+        </div>
+        ${noteHtml}` : ''}
+    </div>
+    ${entries.length ? `
+    <div class="card">
+      <p class="card-title">History</p>
+      ${entries.slice().reverse().slice(0, 14).map(([k, v]) => {
+        const d = new Date(k + 'T12:00:00');
+        return `<div class="log-row">
+          <span>📅</span>
+          <span style="flex:1;color:var(--cream-dim)">${D_SHORT[d.getDay()]} ${d.getDate()}/${d.getMonth() + 1}</span>
+          <span style="font-weight:600;color:var(--jade)">${parseFloat(v).toFixed(1)} kg</span>
+        </div>`;
+      }).join('')}
+    </div>` : ''}`;
+}
+
+function saveWeight() {
+  const inp = document.getElementById('wt-inp');
+  const val = parseFloat(inp.value);
+  if (isNaN(val) || val < 20 || val > 300) { toast('Enter a valid weight', 'err'); return; }
+  const log = storage.getWt();
+  log[TODAY] = val;
+  storage.setWt(log);
+  toast('✓ Weight saved!');
+  renderWeight();
+}
+
+/* ═══════════════════════════════════════════════════
+   SCREEN 4 — STREAK
+═══════════════════════════════════════════════════ */
+function renderStreak() {
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(NOW); d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    days.push({ key, dow: d.getDay(), pct: pctForDate(key) });
+  }
+
+  // Streaks
+  let streak = 0;
+  for (let i = days.length - 1; i >= 0; i--) { if (days[i].pct >= 80) streak++; else break; }
+
+  const skinIds = ['cet_am', 'pond_am', 'uvr', 'cet_pm', 'pond_pm'];
+  let skinStreak = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    const { done } = storage.getDay(days[i].key);
+    if (skinIds.filter(id => done.includes(id)).length >= 4) skinStreak++;
+    else break;
+  }
+
+  const dietIds = ['bfast', 'lunch', 'snack', 'dinner'];
+  let dietStreak = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    const { done } = storage.getDay(days[i].key);
+    if (dietIds.filter(id => done.includes(id)).length >= 3) dietStreak++;
+    else break;
+  }
+
+  let workouts    = 0;
+  let perfectDays = 0;
+  let activeDays  = 0;
+  for (const d of days) {
+    const { done } = storage.getDay(d.key);
+    if (done.includes('workout')) workouts++;
+    if (d.pct === 100) perfectDays++;
+    if (d.pct > 0)    activeDays++;
+  }
+
+  const heatHtml = days.slice(-7).map(d => {
+    const cls = d.pct === 0 ? 'h0' : d.pct < 50 ? 'h25' : d.pct < 75 ? 'h50' : d.pct < 100 ? 'h75' : 'h100';
+    return `<div class="heat-cell ${cls}">
+      <span class="hd">${D_SHORT[d.dow]}</span>
+      <span class="hp">${d.pct > 0 ? d.pct + '%' : '—'}</span>
+    </div>`;
+  }).join('');
+
+  const badges = [
+    { e: '🌟', n: '3-Day Glow',    d: '3-day skincare streak',  earned: skinStreak >= 3  },
+    { e: '💪', n: 'Mass Builder',  d: '5 workouts completed',   earned: workouts >= 5    },
+    { e: '🔥', n: '7-Day Warrior', d: '7 days at 80%+',         earned: streak >= 7      },
+    { e: '✨', n: 'Skincare Pro',  d: '7-day skincare streak',  earned: skinStreak >= 7  },
+    { e: '🏆', n: 'Perfect Day',   d: '100% day completion',    earned: perfectDays >= 1 },
+    { e: '🌱', n: 'Growing Strong',d: '7+ active days tracked', earned: activeDays >= 7  },
+    { e: '🎯', n: 'Consistent',    d: '14 active days tracked', earned: activeDays >= 14 },
+    { e: '👑', n: 'Elite Glow',    d: '14-day streak at 80%+',  earned: streak >= 14     },
+  ];
+
+  document.getElementById('s-streak').innerHTML = `
+    <h2 class="section-heading">Streak & Progress</h2>
+    <div class="card">
+      <div class="streak-hero">
+        <div class="streak-num">${streak}</div>
+        <div class="streak-sub">day streak at 80%+ completion 🔥</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box" style="text-align:center">
+          <div class="stat-val" style="font-size:30px">${skinStreak}</div>
+          <div class="stat-lbl">✨ Skincare streak</div>
+        </div>
+        <div class="stat-box" style="text-align:center">
+          <div class="stat-val" style="font-size:30px">${dietStreak}</div>
+          <div class="stat-lbl">🥗 Diet streak</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">This Week</p>
+      <div class="heatmap">${heatHtml}</div>
+      <div class="stat-grid">
+        <div class="stat-box" style="text-align:center">
+          <div class="stat-val" style="font-size:28px">${workouts}</div>
+          <div class="stat-lbl">💪 Workouts done</div>
+        </div>
+        <div class="stat-box" style="text-align:center">
+          <div class="stat-val" style="font-size:28px">${perfectDays}</div>
+          <div class="stat-lbl">🏆 Perfect days</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Badges</p>
+      <div class="badge-grid">
+        ${badges.map(b => `
+          <div class="badge-card ${b.earned ? 'earned' : ''}">
+            <div class="badge-em">${b.e}</div>
+            <div class="badge-n">${b.n}</div>
+            <div class="badge-d">${b.d}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   SCREEN 5 — ROUTINE GUIDE
+═══════════════════════════════════════════════════ */
+function renderRoutine() {
+  const row = (icon, text) =>
+    `<div class="rt-row"><span class="rt-ic">${icon}</span><span>${text}</span></div>`;
+
+  document.getElementById('s-routine').innerHTML = `
+    <h2 class="section-heading">Routine Guide</h2>
+
+    <div class="card">
+      <p class="card-title">Daily Routine</p>
+      <div class="rt-section">🌅 Morning</div>
+      ${row('🧼', 'Cetaphil Gentle Skin Cleanser — lukewarm water, gentle circles')}
+      ${row('✨', "Pond's Light Moisturizer Gel — apply while face slightly damp")}
+      ${row('☀️', 'UVROZ SPF 50 Sunscreen — last step, 15 min before sun exposure')}
+      ${row('🍳', 'Breakfast: 2 chapatis + 2 boiled or scrambled eggs')}
+      <div class="rt-section">☀️ Afternoon</div>
+      ${row('🍱', 'Lunch: Rice + dal + mixed vegetables')}
+      ${row('🌤️', 'Reapply UVROZ sunscreen every 2 h if outdoors')}
+      <div class="rt-section">🌇 Evening</div>
+      ${row('🍌', 'Snack: 1 glass full-fat milk + 2–3 bananas (300+ cal)')}
+      ${row('💪', `Workout — <strong style="color:var(--amber)">Monday, Wednesday, Friday only</strong>`)}
+      <div class="rt-section">🌙 Night</div>
+      ${row('🥘', 'Dinner: 2–3 chapatis + sabzi or dal')}
+      ${row('🧼', 'Cetaphil face wash — fully removes sunscreen + pollution')}
+      ${row('🌙', "Pond's Gel as night moisturizer — repairs skin during sleep")}
+    </div>
+
+    <div class="card">
+      <p class="card-title">Weekly Extras</p>
+      ${row('💆', '<strong style="color:var(--amber)">Wed & Sat</strong> — Sugar + honey scrub, massage 60 s, rinse')}
+      ${row('🍗', '<strong style="color:var(--amber)">Sunday</strong> — Chicken or fish for extra protein boost')}
+    </div>
+
+    <div class="card">
+      <p class="card-title">Weight Gain Tips</p>
+      ${row('🎯', 'Target: +0.3–0.5 kg/week — any faster is mostly fat')}
+      ${row('📊', 'Weigh every morning — same time, after bathroom, before food')}
+      ${row('🥚', "Never skip eggs — protein prevents muscle loss while bulking")}
+      ${row('🍌', 'Milk + bananas = easiest 300+ cal with micronutrients')}
+      ${row('💪', 'More food on workout days — muscles need fuel to grow')}
+      ${row('😴', '8 h sleep = growth hormone release + skin cell turnover')}
+      ${row('💧', '2.5–3 L water daily — essential for skin glow and metabolism')}
+    </div>
+
+    <div class="card">
+      <p class="card-title">Skincare Tips</p>
+      ${row('✨', "Moisturize immediately after washing — don't let skin air-dry")}
+      ${row('☀️', 'Sunscreen is non-negotiable even indoors near windows')}
+      ${row('🚿', 'Wash face max twice a day — over-washing strips natural oils')}
+      ${row('🙅', "Never pop pimples — causes scarring and spreads bacteria")}
+      ${row('💆', 'Sugar scrub max 2× a week — over-exfoliating damages barrier')}
+      ${row('🌙', 'Night moisturizer + sleep = visible glow within 2 weeks')}
+    </div>
+
+    <div class="card" style="background:rgba(82,176,138,.04);border-color:rgba(82,176,138,.2)">
+      <p class="card-title" style="color:var(--jade)">Run from Termux (Redmi 9i)</p>
+      <div class="code-block">cd ~/glowgain
+python -m http.server 3000
+# → Open localhost:3000 in Chrome
+# → Tap ⋮ → "Add to Home Screen"
+# → Works offline after AI download!</div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   PWA — SERVICE WORKER REGISTRATION
+═══════════════════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(r => console.log('[GlowGain SW] registered', r.scope))
+      .catch(e => console.warn('[GlowGain SW] failed', e));
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+(function init() {
+  updateHeader();
+  renderToday();
+})();
+</script>
+</body>
+</html>
