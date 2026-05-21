@@ -1,53 +1,18 @@
 {
   "name": "GlowGain",
   "short_name": "GlowGain",
-  "description": "Daily skincare & weight-gain routine tracker with on-device AI coach",
-  "start_url": "./",
+  "description": "Daily skincare & weight-gain routine tracker with local AI coach",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#0c0e0d",
   "theme_color": "#0c0e0d",
-  "categories": ["health", "fitness", "lifestyle"],
-  "lang": "en-IN",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%230c0e0d'/><text y='340' x='80' font-size='360'>🌿</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230c0e0d'/><text y='.9em' font-size='80' x='10'>🌿</text></svg>",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "Today's Routine",
-      "short_name": "Today",
-      "description": "Jump straight to today's checklist",
-      "url": "./?s=today",
-      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='400' font-size='480'>📋</text></svg>", "sizes": "any" }]
-    },
-    {
-      "name": "Log Weight",
-      "short_name": "Weight",
-      "description": "Quick-log today's weight",
-      "url": "./?s=weight",
-      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='400' font-size='480'>⚖️</text></svg>", "sizes": "any" }]
-    },
-    {
-      "name": "AI Coach",
-      "short_name": "Coach",
-      "description": "Chat with your on-device AI coach",
-      "url": "./?s=coach",
-      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='400' font-size='480'>🧠</text></svg>", "sizes": "any" }]
-    }
-  ],
-  "screenshots": [
-    {
-      "label": "Today's routine checklist",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ],
-  "prefer_related_applications": false,
-  "related_applications": []
+  ]
 }
