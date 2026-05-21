@@ -121,14 +121,15 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   z-index: 100;
 }
+/* FIGMA: Nav — 6 buttons on narrow screen */
 .nav-btn {
-  flex: 1;
+  flex: 1; min-width: 0;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 3px;
   background: none; border: none;
   color: var(--cream-dim);
-  padding: 8px 4px;
+  padding: 8px 2px;
   min-height: 52px;
   transition: color 0.2s;
   position: relative;
@@ -143,7 +144,8 @@ a { color: inherit; text-decoration: none; }
 }
 .nav-btn .n-icon { font-size: 20px; transition: transform 0.2s; }
 .nav-btn.active .n-icon { transform: scale(1.1); }
-.nav-btn .n-label { font-size: 9px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; }
+/* FIGMA: Nav — smaller label for 6 buttons */
+.nav-btn .n-label { font-size: 8px; font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; }
 
 /* ═══════════════════════════════════
    SCREENS
@@ -211,14 +213,64 @@ a { color: inherit; text-decoration: none; }
 .ring-done.show { display: block; }
 
 /* ═══════════════════════════════════
-   TIME BLOCK LABELS
+   FIGMA: Frame 1 — Today Screen
+   Time-block sections with 3px left accent border
+═══════════════════════════════════ */
+.block-section {
+  border-left: 3px solid transparent;
+  padding-left: 10px;
+  margin: 6px 0 2px;
+}
+.block-section.block-morning   { border-color: var(--amber); }
+.block-section.block-afternoon { border-color: var(--jade); }
+.block-section.block-evening   { border-color: var(--purple); }
+.block-section.block-night     { border-color: var(--blue); }
+
+.block-header {
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none;
+  padding: 4px 0 2px;
+  -webkit-tap-highlight-color: transparent;
+}
+.block-header:active { opacity: 0.7; }
+.block-chevron {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--cream-dim);
+  transition: transform 0.25s;
+  display: inline-block;
+}
+.block-header.collapsed .block-chevron { transform: rotate(-90deg); }
+.block-tasks { overflow: hidden; transition: max-height 0.3s ease; }
+.block-tasks.collapsed { max-height: 0 !important; }
+
+/* FIGMA: completion banner */
+.completion-banner {
+  display: none;
+  background: rgba(82,176,138,.15);
+  border: 1px solid rgba(82,176,138,.4);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 13px; font-weight: 500; color: var(--jade);
+  text-align: center;
+  margin-bottom: 10px;
+  animation: slideDown 0.35s ease;
+}
+.completion-banner.show { display: block; }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ═══════════════════════════════════
+   TIME BLOCK LABELS (pills)
 ═══════════════════════════════════ */
 .t-label {
   font-size: 9px; font-weight: 600; letter-spacing: 1.6px;
   text-transform: uppercase;
   padding: 3px 10px; border-radius: 20px;
   display: inline-block;
-  margin: 8px 0 5px;
+  margin: 2px 0 4px;
 }
 .t-morning   { background: rgba(232,168,53,.14); color: var(--amber);  }
 .t-afternoon { background: rgba(82,176,138,.14);  color: var(--jade);   }
@@ -226,7 +278,7 @@ a { color: inherit; text-decoration: none; }
 .t-night     { background: rgba(100,130,200,.14); color: var(--blue);   }
 
 /* ═══════════════════════════════════
-   TASK ITEMS
+   TASK ITEMS — pill style (Figma Frame 1)
 ═══════════════════════════════════ */
 .task {
   display: flex; align-items: center; gap: 11px;
@@ -266,9 +318,10 @@ a { color: inherit; text-decoration: none; }
   border-radius: 10px; letter-spacing: 0.4px;
   text-transform: uppercase; font-weight: 600; flex-shrink: 0;
 }
-.tag-skin { background: rgba(232,168,53,.12); color: var(--amber); }
-.tag-diet { background: rgba(82,176,138,.12);  color: var(--jade);  }
-.tag-fit  { background: rgba(180,120,200,.12); color: var(--purple); }
+.tag-skin  { background: rgba(232,168,53,.12); color: var(--amber); }
+.tag-diet  { background: rgba(82,176,138,.12);  color: var(--jade);  }
+.tag-fit   { background: rgba(180,120,200,.12); color: var(--purple); }
+.tag-other { background: rgba(122,148,144,.12); color: var(--cream-dim); }
 
 /* ═══════════════════════════════════
    BONUS / EXTRAS
@@ -304,9 +357,84 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ═══════════════════════════════════
-   AI CHAT
+   FIGMA: Frame 2 — Coach Screen
 ═══════════════════════════════════ */
-/* Model picker */
+/* Model chip row (horizontal scroll) */
+.model-chips-row {
+  display: flex; gap: 8px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px; margin-bottom: 10px;
+  scrollbar-width: none;
+}
+.model-chips-row::-webkit-scrollbar { display: none; }
+.model-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  background: var(--card);
+  cursor: pointer; white-space: nowrap;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.model-chip.active {
+  border-color: var(--amber);
+  background: rgba(232,168,53,.08);
+}
+.model-chip-icon { font-size: 16px; }
+.model-chip-name { font-size: 12px; font-weight: 500; color: var(--cream); }
+.model-chip-size { font-size: 10px; color: var(--cream-dim); }
+
+/* User chat bubble — right aligned, amber tinted */
+.msg.user {
+  align-self: flex-end;
+  background: var(--amber);
+  color: #0c0e0d;
+  font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+/* AI chat bubble — left aligned, jade tinted, avatar */
+.msg.ai {
+  align-self: flex-start;
+  background: rgba(82,176,138,.10);
+  border: 1px solid rgba(82,176,138,.2);
+  border-bottom-left-radius: 4px;
+  position: relative;
+  padding-left: 36px;
+}
+.msg.ai::before {
+  content: '🌿';
+  position: absolute; left: 10px; top: 10px;
+  font-size: 14px;
+}
+/* Thinking state — 3-dot pulse */
+.msg.think {
+  align-self: flex-start;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+  color: var(--cream-dim);
+  padding-left: 36px;
+  position: relative;
+}
+.msg.think::before { content: '🌿'; position: absolute; left: 10px; top: 10px; font-size: 14px; }
+.dots-anim {
+  display: inline-flex; align-items: center; gap: 4px; vertical-align: middle;
+}
+.dots-anim span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--cream-dim);
+  animation: dotPulse 1.2s infinite ease-in-out;
+  display: inline-block;
+}
+.dots-anim span:nth-child(2) { animation-delay: 0.2s; }
+.dots-anim span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse {
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+  40%            { transform: scale(1.2); opacity: 1; }
+}
+
+/* OLD model-card styles — kept for backwards-compat but unused in v2 */
 .model-card {
   display: flex; align-items: center; gap: 12px;
   padding: 13px 14px;
@@ -317,14 +445,8 @@ a { color: inherit; text-decoration: none; }
   -webkit-tap-highlight-color: transparent;
 }
 .model-card:active { transform: scale(0.98); }
-.model-card.rec {
-  border-color: rgba(82,176,138,.45);
-  background: rgba(82,176,138,.06);
-}
-.model-card.resume-card {
-  border-color: rgba(232,168,53,.45);
-  background: rgba(232,168,53,.07);
-}
+.model-card.rec { border-color: rgba(82,176,138,.45); background: rgba(82,176,138,.06); }
+.model-card.resume-card { border-color: rgba(232,168,53,.45); background: rgba(232,168,53,.07); }
 .model-icon { font-size: 24px; flex-shrink: 0; }
 .model-name { font-size: 14px; font-weight: 500; color: var(--cream); }
 .model-meta { font-size: 11.5px; color: var(--cream-dim); margin-top: 2px; line-height: 1.4; }
@@ -333,10 +455,10 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
   margin-left: 6px; vertical-align: middle;
 }
-.badge-green { background: rgba(82,176,138,.2);  color: var(--jade);  }
+.badge-green { background: rgba(82,176,138,.2);  color: var(--jade); }
 .badge-amber { background: rgba(232,168,53,.2);  color: var(--amber); }
 
-/* Download progress */
+/* Download per-file bars */
 .dl-card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: var(--r); padding: 24px 20px;
@@ -344,7 +466,12 @@ a { color: inherit; text-decoration: none; }
 }
 .dl-spinner { font-size: 44px; animation: spin 2s linear infinite; display: inline-block; margin-bottom: 14px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
+.dl-files { text-align: left; margin-top: 14px; }
+.dl-file-row { margin-bottom: 10px; }
+.dl-file-name { font-size: 10px; color: var(--cream-dim); margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-file-bar-wrap { background: var(--border); border-radius: 20px; height: 5px; overflow: hidden; }
+.dl-file-fill { background: var(--jade); height: 100%; border-radius: 20px; transition: width 0.3s ease; }
+.dl-file-pct { font-size: 10px; color: var(--jade); float: right; margin-top: -14px; }
 .progress-track { background: var(--border); border-radius: 20px; height: 7px; overflow: hidden; margin: 14px 0 6px; }
 .progress-fill  { background: var(--jade); height: 100%; border-radius: 20px; transition: width 0.3s ease; }
 
@@ -370,20 +497,12 @@ a { color: inherit; text-decoration: none; }
 .qbtn:active { color: var(--amber); border-color: var(--amber-dim); background: var(--amber-glow); }
 
 .chat-box { height: calc(100vh - 318px); min-height: 200px; overflow-y: auto; padding: 2px 0; display: flex; flex-direction: column; gap: 9px; }
-
 .msg { max-width: 88%; padding: 10px 13px; border-radius: 15px; font-size: 13.5px; line-height: 1.55; word-wrap: break-word; }
-.msg.user  { align-self: flex-end; background: var(--amber); color: #0c0e0d; font-weight: 500; border-bottom-right-radius: 4px; }
-.msg.ai    { align-self: flex-start; background: var(--card2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-.msg.think { align-self: flex-start; background: var(--card2); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--cream-dim); font-style: italic; }
 .msg-time  { font-size: 9px; opacity: 0.6; margin-top: 4px; }
 .msg.user .msg-time { text-align: right; }
 
-.dots::after { content: '...'; animation: dots 1.2s infinite; }
-@keyframes dots { 0%,20%{content:'.';} 40%,60%{content:'..';} 80%,100%{content:'...';} }
-
-.chat-input-row {
-  display: flex; gap: 8px; align-items: flex-end; margin-top: 10px;
-}
+/* Send button — amber */
+.chat-input-row { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
 .chat-ta {
   flex: 1;
   background: var(--card); border: 1px solid var(--border);
@@ -405,7 +524,8 @@ a { color: inherit; text-decoration: none; }
 .send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
 /* ═══════════════════════════════════
-   WEIGHT
+   FIGMA: Frame 3 — Weight Screen
+   Bottom sheet modal + full card chart
 ═══════════════════════════════════ */
 .weight-input-row { display: flex; gap: 10px; align-items: stretch; }
 .wt-inp {
@@ -422,17 +542,40 @@ a { color: inherit; text-decoration: none; }
   font-size: 14px; font-weight: 600; transition: opacity 0.2s;
 }
 .wt-save:active { opacity: 0.75; }
-
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .stat-box  { background: var(--surface); border-radius: var(--r-sm); padding: 12px; }
 .stat-val  { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--jade); }
 .stat-lbl  { font-size: 10px; color: var(--cream-dim); margin-top: 3px; }
-
 .log-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 .log-row:last-child { border-bottom: none; }
 
+/* Bottom sheet scrim + drawer */
+.sheet-scrim {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity 0.28s;
+}
+.sheet-scrim.show { opacity: 1; pointer-events: all; }
+.bottom-sheet {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 480px;
+  background: var(--card2);
+  border-radius: 20px 20px 0 0;
+  z-index: 201;
+  padding: 0 0 env(safe-area-inset-bottom,16px);
+  transition: transform 0.32s cubic-bezier(.22,1,.36,1);
+  max-height: 92vh; overflow-y: auto;
+}
+.bottom-sheet.show { transform: translateX(-50%) translateY(0); }
+.sheet-handle {
+  width: 40px; height: 4px; border-radius: 4px;
+  background: var(--border2); margin: 12px auto 0;
+}
+.sheet-body { padding: 14px 16px 24px; }
+.sheet-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+
 /* ═══════════════════════════════════
-   STREAK
+   FIGMA: Frame 4 — Streak & Badges
 ═══════════════════════════════════ */
 .streak-hero { text-align: center; padding: 12px 0 10px; }
 .streak-num  {
@@ -443,6 +586,10 @@ a { color: inherit; text-decoration: none; }
 }
 .streak-sub { font-size: 13px; color: var(--cream-dim); margin-top: 6px; }
 
+/* Heatmap — improved contrast + DOW labels */
+.heatmap-wrap {}
+.heatmap-dow-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 4px; }
+.heatmap-dow-lbl { font-size: 8px; text-align: center; color: var(--cream-dim); letter-spacing: 0.4px; text-transform: uppercase; }
 .heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
 .heat-cell { aspect-ratio: 1; border-radius: 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; transition: transform 0.15s; }
 .heat-cell:active { transform: scale(0.9); }
@@ -453,22 +600,216 @@ a { color: inherit; text-decoration: none; }
 .h50  { background: rgba(82,176,138,.4);         color: var(--jade); }
 .h75  { background: rgba(82,176,138,.65);        color: #0c0e0d; }
 .h100 { background: var(--jade);                color: #0c0e0d; }
+/* Heatmap legend */
+.heat-legend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 9px; color: var(--cream-dim); }
+.heat-swatch { width: 12px; height: 12px; border-radius: 3px; }
 
-.badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* Badge grid — 3 columns (Figma Frame 4) */
+.badge-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 .badge-card {
   background: var(--surface); border-radius: 13px;
-  padding: 14px 10px; text-align: center;
+  padding: 12px 8px; text-align: center;
   border: 1px solid var(--border);
   opacity: 0.3; transition: opacity 0.3s, border-color 0.3s, transform 0.2s;
+  position: relative;
 }
-.badge-card.earned { opacity: 1; border-color: var(--amber-dim); }
+.badge-card.earned { opacity: 1; border-color: var(--amber-dim); box-shadow: 0 0 12px rgba(232,168,53,.12); }
 .badge-card.earned:active { transform: scale(0.96); }
-.badge-em { font-size: 28px; margin-bottom: 6px; }
-.badge-n  { font-size: 11px; font-weight: 600; color: var(--amber); margin-bottom: 3px; }
-.badge-d  { font-size: 10px; color: var(--cream-dim); line-height: 1.35; }
+.badge-card.locked::after {
+  content: '🔒'; position: absolute; top: 4px; right: 6px; font-size: 10px; opacity: 0.6;
+}
+.badge-em { font-size: 26px; margin-bottom: 5px; }
+.badge-n  { font-size: 10px; font-weight: 600; color: var(--amber); margin-bottom: 2px; }
+.badge-d  { font-size: 9px; color: var(--cream-dim); line-height: 1.35; }
 
 /* ═══════════════════════════════════
-   ROUTINE GUIDE
+   FIGMA: Frame 5 — Routine Guide
+   Tab bar + accordion cards
+═══════════════════════════════════ */
+.tab-bar {
+  display: flex; border-bottom: 1px solid var(--border);
+  margin-bottom: 12px; overflow-x: auto;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: 1; min-width: 60px;
+  padding: 10px 4px;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--cream-dim); font-size: 13px; font-family: inherit;
+  cursor: pointer; text-align: center; white-space: nowrap;
+  margin-bottom: -1px; transition: color 0.18s, border-color 0.18s;
+}
+.tab-btn.active { color: var(--amber); border-bottom-color: var(--amber); font-weight: 500; }
+
+.accordion-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); margin-bottom: 8px; overflow: hidden;
+}
+.accordion-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 14px; cursor: pointer;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.accordion-head:active { opacity: 0.7; }
+.accordion-ic { font-size: 18px; flex-shrink: 0; }
+.accordion-lbl { flex: 1; font-size: 13.5px; }
+.accordion-cat {
+  font-size: 9px; padding: 2px 8px; border-radius: 10px;
+  text-transform: uppercase; font-weight: 600;
+}
+.accordion-chev {
+  font-size: 12px; color: var(--cream-dim);
+  transition: transform 0.25s; flex-shrink: 0;
+}
+.accordion-card.open .accordion-chev { transform: rotate(180deg); }
+.accordion-body {
+  border-top: 1px solid var(--border);
+  border-left: 3px solid var(--jade);
+  padding: 11px 14px;
+  font-size: 12.5px; color: var(--cream-dim); line-height: 1.6;
+  display: none;
+}
+.accordion-card.open .accordion-body { display: block; }
+
+/* ═══════════════════════════════════
+   FIGMA: Frame 6 — Plans Screen
+═══════════════════════════════════ */
+.plan-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 13px 14px;
+  margin-bottom: 8px; transition: opacity 0.2s;
+}
+.plan-card.disabled { opacity: 0.52; }
+.plan-card-icon { font-size: 22px; flex-shrink: 0; }
+.plan-card-info { flex: 1; min-width: 0; }
+.plan-card-label { font-size: 13.5px; font-weight: 500; }
+.plan-card-sub   { font-size: 10px; color: var(--cream-dim); margin-top: 2px; }
+.plan-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* Toggle switch */
+.toggle-switch {
+  width: 42px; height: 24px; border-radius: 12px;
+  background: var(--border2); cursor: pointer;
+  position: relative; transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle-switch.on { background: var(--jade); }
+.toggle-switch::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 9px;
+  background: #fff; top: 3px; left: 3px;
+  transition: transform 0.2s;
+}
+.toggle-switch.on::after { transform: translateX(18px); }
+
+.drag-handle { font-size: 18px; color: var(--border2); cursor: grab; }
+
+.disabled-badge {
+  font-size: 9px; padding: 2px 8px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--cream-dim); font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* FAB */
+.fab {
+  position: fixed; bottom: calc(var(--nav-h) + 16px); right: 16px;
+  width: 56px; height: 56px; border-radius: 28px;
+  background: var(--amber); border: none;
+  font-size: 26px; color: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(232,168,53,.35);
+  z-index: 90; cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.fab:active { transform: scale(0.93); box-shadow: 0 3px 10px rgba(232,168,53,.2); }
+.fab-hidden { display: none; }
+
+/* ═══════════════════════════════════
+   FIGMA: Frame 7 — Plan Item Editor
+   (inside bottom sheet)
+═══════════════════════════════════ */
+.field-label { font-size: 11px; font-weight: 500; color: var(--cream-dim); margin-bottom: 6px; margin-top: 14px; letter-spacing: 0.4px; text-transform: uppercase; }
+.field-input {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 13px;
+  padding: 12px 14px; color: var(--cream);
+  font-size: 14px; font-family: inherit; outline: none;
+  transition: border-color 0.2s;
+}
+.field-input:focus { border-color: var(--amber-dim); }
+.field-input::placeholder { color: var(--cream-dim); }
+textarea.field-input { resize: none; min-height: 76px; line-height: 1.5; }
+
+/* Segmented control */
+.seg-ctrl { display: flex; border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+.seg-btn {
+  flex: 1; padding: 9px 4px; background: var(--surface);
+  border: none; border-right: 1px solid var(--border);
+  color: var(--cream-dim); font-size: 12px; font-family: inherit;
+  cursor: pointer; text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.seg-btn:last-child { border-right: none; }
+.seg-btn.active { background: rgba(232,168,53,.12); color: var(--amber); font-weight: 500; }
+
+/* Day pills row */
+.days-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.day-pill {
+  width: 36px; height: 36px; border-radius: 18px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  color: var(--cream-dim); font-size: 12px; font-weight: 500;
+  cursor: pointer; text-align: center; line-height: 33px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.day-pill.on { background: rgba(232,168,53,.18); border-color: var(--amber); color: var(--amber); }
+
+/* Plan editor action bar */
+.sheet-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+.btn-primary {
+  width: 100%; padding: 14px;
+  background: var(--amber); border: none; border-radius: 13px;
+  color: var(--bg); font-size: 15px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: opacity 0.18s;
+}
+.btn-primary:active { opacity: 0.8; }
+.btn-danger {
+  width: 100%; padding: 12px;
+  background: rgba(224,104,104,.08); border: 1.5px solid rgba(224,104,104,.35);
+  border-radius: 13px; color: var(--danger);
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: opacity 0.18s;
+}
+.btn-danger:active { opacity: 0.7; }
+
+/* ═══════════════════════════════════
+   FIGMA: Frame 8 — Empty State
+═══════════════════════════════════ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 24px;
+  text-align: center;
+}
+.empty-svg { margin-bottom: 20px; }
+.empty-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; color: var(--cream);
+  margin-bottom: 8px;
+}
+.empty-sub { font-size: 14px; color: var(--cream-dim); line-height: 1.6; margin-bottom: 20px; }
+.btn-add-step {
+  padding: 11px 28px; background: var(--amber);
+  border: none; border-radius: 22px; color: var(--bg);
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: opacity 0.18s;
+}
+.btn-add-step:active { opacity: 0.8; }
+
+/* ═══════════════════════════════════
+   ROUTINE GUIDE (legacy styles kept)
 ═══════════════════════════════════ */
 .rt-section { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim); margin: 12px 0 6px; }
 .rt-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(38,50,48,.6); font-size: 13px; line-height: 1.4; }
@@ -516,6 +857,7 @@ a { color: inherit; text-decoration: none; }
     <div id="s-weight"  class="screen"></div>
     <div id="s-streak"  class="screen"></div>
     <div id="s-routine" class="screen"></div>
+    <div id="s-plans"   class="screen"></div>
   </main>
 
   <nav class="app-nav">
@@ -534,11 +876,88 @@ a { color: inherit; text-decoration: none; }
     <button class="nav-btn" onclick="go('routine',this)">
       <span class="n-icon">📖</span><span class="n-label">Guide</span>
     </button>
+    <button class="nav-btn" onclick="go('plans',this)">
+      <span class="n-icon">✏️</span><span class="n-label">Plans</span>
+    </button>
   </nav>
 </div>
 
 <div class="toast" id="toast"></div>
 <div class="confetti-wrap" id="confetti"></div>
+
+<!-- FIGMA: Frame 7 — Plan Item Editor (bottom sheet) -->
+<div class="sheet-scrim" id="plan-scrim" onclick="closePlanEditor()"></div>
+<div class="bottom-sheet" id="plan-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-body">
+    <div class="sheet-title" id="plan-sheet-title">Add Step</div>
+    <input type="hidden" id="pe-id">
+    <input type="hidden" id="pe-type">
+
+    <div class="field-label">Label</div>
+    <input type="text" id="pe-label" class="field-input" placeholder="e.g. Apply face serum">
+
+    <div class="field-label">Category</div>
+    <div class="seg-ctrl" id="pe-cat-ctrl">
+      <button class="seg-btn active" data-val="skin" onclick="segSelect('pe-cat-ctrl',this)">Skin</button>
+      <button class="seg-btn" data-val="diet" onclick="segSelect('pe-cat-ctrl',this)">Diet</button>
+      <button class="seg-btn" data-val="fit"  onclick="segSelect('pe-cat-ctrl',this)">Fit</button>
+      <button class="seg-btn" data-val="other" onclick="segSelect('pe-cat-ctrl',this)">Other</button>
+    </div>
+
+    <div class="field-label">Icon</div>
+    <input type="text" id="pe-icon" class="field-input" style="width:80px" placeholder="🧴" maxlength="4">
+
+    <div class="field-label">Time Block</div>
+    <div class="seg-ctrl" id="pe-block-ctrl">
+      <button class="seg-btn active" data-val="morning"   onclick="segSelect('pe-block-ctrl',this)">Morning</button>
+      <button class="seg-btn" data-val="afternoon" onclick="segSelect('pe-block-ctrl',this)">Afternoon</button>
+      <button class="seg-btn" data-val="evening"   onclick="segSelect('pe-block-ctrl',this)">Evening</button>
+      <button class="seg-btn" data-val="night"     onclick="segSelect('pe-block-ctrl',this)">Night</button>
+    </div>
+
+    <div class="field-label">Days <span style="font-size:10px;color:var(--cream-faint);font-weight:400;text-transform:none">(empty = every day)</span></div>
+    <div class="days-row" id="pe-days-row">
+      <button class="day-pill" data-day="0" onclick="toggleDay(this)">S</button>
+      <button class="day-pill" data-day="1" onclick="toggleDay(this)">M</button>
+      <button class="day-pill" data-day="2" onclick="toggleDay(this)">T</button>
+      <button class="day-pill" data-day="3" onclick="toggleDay(this)">W</button>
+      <button class="day-pill" data-day="4" onclick="toggleDay(this)">T</button>
+      <button class="day-pill" data-day="5" onclick="toggleDay(this)">F</button>
+      <button class="day-pill" data-day="6" onclick="toggleDay(this)">S</button>
+    </div>
+
+    <div class="field-label">Tip (optional)</div>
+    <textarea id="pe-tip" class="field-input" placeholder="Add a helpful tip..."></textarea>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
+      <span style="font-size:13px;color:var(--cream)">Enabled</span>
+      <div id="pe-enabled-toggle" class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn-primary" onclick="savePlanItem()">Save Step</button>
+      <button class="btn-danger" id="pe-delete-btn" style="display:none" onclick="deletePlanItemBtn()">Delete Step</button>
+    </div>
+  </div>
+</div>
+
+<!-- Weight log bottom sheet -->
+<div class="sheet-scrim" id="wt-scrim" onclick="closeWeightSheet()"></div>
+<div class="bottom-sheet" id="wt-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-body">
+    <div class="sheet-title">Log Weight</div>
+    <div class="field-label">Weight (kg)</div>
+    <input type="number" id="wt-sheet-inp" class="field-input" style="font-size:28px;text-align:center;font-family:'Playfair Display',serif"
+      placeholder="60.0" step="0.1" min="20" max="300">
+    <div class="field-label">Date</div>
+    <input type="date" id="wt-sheet-date" class="field-input">
+    <div class="sheet-actions">
+      <button class="btn-primary" onclick="saveWeightSheet()">Save Weight</button>
+    </div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -548,6 +967,19 @@ a { color: inherit; text-decoration: none; }
 ═══════════════════════════════════════════════════ */
 const D_LONG  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const D_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+/**
+ * PlanItem schema (stored in localStorage as JSON arrays)
+ * @typedef {Object} PlanItem
+ * @property {string}   id      - Unique ID (Date.now().toString(36) + random suffix)
+ * @property {string}   label   - Display name shown in the checklist
+ * @property {'skin'|'diet'|'fit'|'other'} cat - Category
+ * @property {string}   icon    - Emoji or short string
+ * @property {string}   [tip]   - Optional tip shown on expand
+ * @property {'morning'|'afternoon'|'evening'|'night'} block - Time block
+ * @property {number[]} days    - Weekday indices [0=Sun..6=Sat]. Empty = every day.
+ * @property {boolean}  enabled - False = soft-disabled, excluded from checklist
+ */
 
 const ROUTINE = {
   morning: [
@@ -586,30 +1018,21 @@ const BLOCK_META = {
 const AI_MODELS = [
   {
     id:   'HuggingFaceTB/SmolLM2-135M-Instruct',
-    name: 'SmolLM2 135M',
-    icon: '⚡',
-    size: '~270 MB',
+    name: 'SmolLM2 135M', icon: '⚡', size: '~270 MB',
     note: 'Fastest · Best for Redmi 9i · Loads in seconds after first download',
-    rec:  true,
-    prompt: 'compact',   // use shorter system prompt
+    rec:  true, prompt: 'compact',
   },
   {
     id:   'HuggingFaceTB/SmolLM2-360M-Instruct',
-    name: 'SmolLM2 360M',
-    icon: '🏃',
-    size: '~720 MB',
+    name: 'SmolLM2 360M', icon: '🏃', size: '~720 MB',
     note: 'Smarter replies · Good balance of speed and quality',
-    rec:  false,
-    prompt: 'compact',
+    rec:  false, prompt: 'compact',
   },
   {
     id:   'Xenova/TinyLlama-1.1B-Chat-v1.0',
-    name: 'TinyLlama 1.1B',
-    icon: '🐢',
-    size: '~637 MB',
+    name: 'TinyLlama 1.1B', icon: '🐢', size: '~637 MB',
     note: 'Best quality · Slower on phone · Best instruction following',
-    rec:  false,
-    prompt: 'full',
+    rec:  false, prompt: 'full',
   },
 ];
 
@@ -620,15 +1043,17 @@ const NOW       = new Date();
 const TODAY     = NOW.toISOString().split('T')[0];
 const DOW       = NOW.getDay();
 
-// AI
-let ai          = null;        // Transformers.js pipeline instance
-let aiState     = 'idle';      // idle | loading | ready | error
+let ai          = null;
+let aiState     = 'idle';
 let aiModelId   = null;
 let aiPromptType= 'compact';
 let aiRunning   = false;
 let chatMounted = false;
 let chatHistory = [];
 let dlProgress  = {};
+
+// Plans screen state
+let plansActiveTab = 'skin'; // 'skin' | 'diet'
 
 /* ═══════════════════════════════════════════════════
    STORAGE HELPERS
@@ -640,22 +1065,61 @@ const storage = {
   setDay: (date, v)   => storage.set('gg_d_'+date, v),
   getWt:  ()          => storage.get('gg_wt', {}),
   setWt:  (v)         => storage.set('gg_wt', v),
-  model:  {
-    get:  ()  => localStorage.getItem('gg_model_id'),
-    set:  (id)=> localStorage.setItem('gg_model_id', id),
+  model: {
+    get:  ()   => localStorage.getItem('gg_model_id'),
+    set:  (id) => localStorage.setItem('gg_model_id', id),
+  },
+  // ─── Track B: Plans storage ───
+  plans: {
+    getSkin: ()  => storage.get('gg_plan_skin', []),
+    getDiet: ()  => storage.get('gg_plan_diet', []),
+    setSkin: (v) => storage.set('gg_plan_skin', v),
+    setDiet: (v) => storage.set('gg_plan_diet', v),
+    getAll:  ()  => [...storage.plans.getSkin(), ...storage.plans.getDiet()],
   },
 };
 
 /* ═══════════════════════════════════════════════════
-   TASK HELPERS
+   TRACK B: DEFAULT PLAN SEEDING
+═══════════════════════════════════════════════════ */
+function seedDefaultPlans() {
+  if (localStorage.getItem('gg_plan_seeded')) return;
+
+  const skinItems = [], dietItems = [];
+
+  for (const [block, tasks] of Object.entries(ROUTINE)) {
+    for (const t of tasks) {
+      const item = {
+        id: t.id, label: t.label, cat: t.cat, icon: t.icon,
+        tip: t.tip || '', block, days: t.days || [], enabled: true
+      };
+      if (t.cat === 'skin') skinItems.push(item);
+      else dietItems.push(item);
+    }
+  }
+
+  for (const e of EXTRAS) {
+    dietItems.push({
+      id: e.id, label: e.label, cat: 'other', icon: e.icon,
+      tip: e.tip || '', block: 'evening', days: e.days, enabled: true
+    });
+  }
+
+  storage.set('gg_plan_skin', skinItems);
+  storage.set('gg_plan_diet', dietItems);
+  localStorage.setItem('gg_plan_seeded', '1');
+}
+
+/* ═══════════════════════════════════════════════════
+   TRACK B: allTasksForDay — reads live plan data
 ═══════════════════════════════════════════════════ */
 function allTasksForDay(dow = DOW) {
-  const tasks = [];
-  for (const [block, list] of Object.entries(ROUTINE))
-    for (const t of list)
-      if (!t.days || t.days.includes(dow))
-        tasks.push({ ...t, block });
-  return tasks;
+  const all = storage.plans.getAll();
+  return all.filter(item => {
+    if (!item.enabled) return false;
+    if (item.days && item.days.length > 0 && !item.days.includes(dow)) return false;
+    return true;
+  });
 }
 
 function pctForDate(dateKey) {
@@ -673,7 +1137,7 @@ function toast(msg, type = 'ok') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.style.background = type === 'ok' ? 'var(--jade)' : type === 'warn' ? 'var(--amber)' : 'var(--danger)';
-  el.style.color = type === 'ok' ? '#0c0e0d' : '#0c0e0d';
+  el.style.color = '#0c0e0d';
   el.classList.add('show');
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove('show'), 2300);
@@ -686,13 +1150,7 @@ function confetti() {
   for (let i = 0; i < 48; i++) {
     const el = document.createElement('div');
     el.className = 'confetti-piece';
-    el.style.cssText = `
-      left:${Math.random()*100}%;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
-      border-radius:${Math.random()>.5?'50%':'2px'};
-      animation-duration:${1.2+Math.random()*1.2}s;
-      animation-delay:${Math.random()*.4}s;`;
+    el.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.2+Math.random()*1.2}s;animation-delay:${Math.random()*.4}s;`;
     wrap.appendChild(el);
     setTimeout(() => el.remove(), 2800);
   }
@@ -711,7 +1169,10 @@ function go(name, btn) {
   document.getElementById('s-' + name).classList.add('active');
   btn.classList.add('active');
   updateHeader();
-  const renders = { today: renderToday, coach: renderCoach, weight: renderWeight, streak: renderStreak, routine: renderRoutine };
+  const renders = {
+    today: renderToday, coach: renderCoach, weight: renderWeight,
+    streak: renderStreak, routine: renderRoutine, plans: renderPlans
+  };
   renders[name]?.();
 }
 
@@ -731,8 +1192,11 @@ function updateHeader() {
 }
 
 /* ═══════════════════════════════════════════════════
-   SCREEN 1 — TODAY
+   SCREEN 1 — TODAY (reads from live plans)
 ═══════════════════════════════════════════════════ */
+// Track collapsed blocks
+const _collapsedBlocks = new Set();
+
 function renderToday() {
   const dayData = storage.getDay(TODAY);
   const pct     = pctForDate(TODAY);
@@ -740,13 +1204,36 @@ function renderToday() {
   const offset  = C - (pct / 100) * C;
   const full    = pct === 100;
 
-  // Build task blocks
+  // Group tasks by block from live plan data
+  const tasks = allTasksForDay();
+  const byBlock = { morning:[], afternoon:[], evening:[], night:[] };
+  for (const t of tasks) {
+    if (byBlock[t.block]) byBlock[t.block].push(t);
+  }
+
+  // Also gather extra (cat:'other') tasks for this DOW
+  const allPlan = storage.plans.getAll();
+  const todayExtras = allPlan.filter(e =>
+    e.cat === 'other' && e.enabled &&
+    (e.days.length === 0 || e.days.includes(DOW))
+  );
+
   let blockHtml = '';
   for (const [block, meta] of Object.entries(BLOCK_META)) {
-    const tasks = ROUTINE[block].filter(t => !t.days || t.days.includes(DOW));
-    if (!tasks.length) continue;
-    blockHtml += `<div class="${meta.cls} t-label">${meta.label}</div>`;
-    for (const t of tasks) {
+    const bTasks = byBlock[block] || [];
+    // filter out 'other' items which show in extras
+    const filtered = bTasks.filter(t => t.cat !== 'other');
+    if (!filtered.length) continue;
+
+    const isCollapsed = _collapsedBlocks.has(block);
+    blockHtml += `
+      <div class="block-section block-${block}">
+        <div class="block-header${isCollapsed ? ' collapsed' : ''}" onclick="toggleBlock('${block}', this)">
+          <span class="${meta.cls} t-label" style="margin:0">${meta.label}</span>
+          <span class="block-chevron">▾</span>
+        </div>
+        <div class="block-tasks" style="max-height:${isCollapsed ? 0 : 2000}px">`;
+    for (const t of filtered) {
       const done = dayData.done.includes(t.id);
       blockHtml += `
         <div class="task ${done ? 'done' : ''}" onclick="toggleTask('${t.id}')">
@@ -754,26 +1241,26 @@ function renderToday() {
           <span class="task-icon">${t.icon}</span>
           <div style="flex:1">
             <div class="task-text">${t.label}</div>
-            ${done ? '' : `<div style="font-size:11px;color:var(--cream-dim);margin-top:1px">${t.tip}</div>`}
+            ${done ? '' : `<div style="font-size:11px;color:var(--cream-dim);margin-top:1px">${t.tip||''}</div>`}
           </div>
-          <span class="task-tag tag-${t.cat === 'skin' ? 'skin' : t.cat === 'diet' ? 'diet' : 'fit'}">${t.cat}</span>
+          <span class="task-tag tag-${t.cat === 'skin' ? 'skin' : t.cat === 'diet' ? 'diet' : t.cat === 'fit' ? 'fit' : 'other'}">${t.cat}</span>
         </div>`;
     }
+    blockHtml += `</div></div>`;
   }
 
-  // Extras for today
-  const todayExtras = EXTRAS.filter(e => e.days.includes(DOW));
+  // Extras (cat:'other') from plan
   let extraHtml = '';
   if (todayExtras.length) {
     extraHtml = `<div class="card"><p class="card-title">Today's Extras ✨</p>`;
     for (const e of todayExtras) {
-      const done = dayData.extras[e.id];
+      const done = dayData.done.includes(e.id);
       extraHtml += `
-        <div class="extra-card ${done ? 'done' : ''}" onclick="toggleExtra('${e.id}')">
+        <div class="extra-card ${done ? 'done' : ''}" onclick="toggleTask('${e.id}')">
           <span class="extra-icon">${e.icon}</span>
           <div style="flex:1">
             <div class="extra-text">${e.label}</div>
-            <div style="font-size:11px;color:var(--cream-dim);margin-top:1px">${e.tip}</div>
+            <div style="font-size:11px;color:var(--cream-dim);margin-top:1px">${e.tip||''}</div>
           </div>
           <span class="extra-check">${done ? '✅' : '⬜'}</span>
         </div>`;
@@ -782,6 +1269,7 @@ function renderToday() {
   }
 
   document.getElementById('s-today').innerHTML = `
+    <div class="${full ? 'completion-banner show' : 'completion-banner'}">✨ All Done! Great work today.</div>
     <div class="card" style="margin-top:4px">
       <div class="ring-wrap">
         <svg width="96" height="96" class="ring-svg" viewBox="0 0 96 96">
@@ -805,6 +1293,18 @@ function renderToday() {
     ${extraHtml}`;
 }
 
+function toggleBlock(block, headerEl) {
+  if (_collapsedBlocks.has(block)) {
+    _collapsedBlocks.delete(block);
+    headerEl.classList.remove('collapsed');
+    headerEl.nextElementSibling.style.maxHeight = '2000px';
+  } else {
+    _collapsedBlocks.add(block);
+    headerEl.classList.add('collapsed');
+    headerEl.nextElementSibling.style.maxHeight = '0';
+  }
+}
+
 function toggleTask(id) {
   const d = storage.getDay(TODAY);
   const i = d.done.indexOf(id);
@@ -819,24 +1319,9 @@ function toggleTask(id) {
   updateHeader();
 }
 
-function toggleExtra(id) {
-  const d = storage.getDay(TODAY);
-  d.extras[id] = !d.extras[id];
-  storage.setDay(TODAY, d);
-  if (d.extras[id]) toast('✓ Extra logged!');
-  renderToday();
-}
-
 /* ═══════════════════════════════════════════════════
    SCREEN 2 — AI COACH
-   ─────────────────────────────────────────────────
-   System Prompt Architecture:
-   • Two variants: "compact" (135M/360M) and "full" (1.1B+)
-   • Compact: shorter, very direct — small models need brevity
-   • Full: richer context, more nuanced coaching instructions
-   • Both are rebuilt FRESH each message with live stats
 ═══════════════════════════════════════════════════ */
-
 function getStats() {
   const d       = storage.getDay(TODAY);
   const all     = allTasksForDay();
@@ -844,18 +1329,16 @@ function getStats() {
   const pending = all.filter(t => !d.done.includes(t.id));
   const pct     = pctForDate(TODAY);
   const wt      = storage.getWt()[TODAY];
-
-  // Last 7-day streak
   let streak = 0;
   for (let i = 0; i < 7; i++) {
     const dt = new Date(NOW); dt.setDate(dt.getDate() - i);
     if (pctForDate(dt.toISOString().split('T')[0]) >= 80) streak++;
     else break;
   }
-
   return { d, all, done, pending, pct, wt, streak };
 }
 
+// ─── Track B: buildSystemPrompt reads live plans ───
 function buildSystemPrompt(type = 'compact') {
   const { done, pending, pct, wt, streak } = getStats();
   const isWorkoutDay = [1,3,5].includes(DOW);
@@ -863,12 +1346,12 @@ function buildSystemPrompt(type = 'compact') {
   const pendingStr = pending.length ? pending.map(t=>t.label).join(', ') : 'all done!';
 
   if (type === 'compact') {
-    // ── COMPACT PROMPT (SmolLM2 135M / 360M) ──────────────────────────
-    // Small models work best with short, explicit, structured prompts.
-    // Instructions are crisp, context is minimal but live.
+    // Read live plan items for compact summary
+    const planItems = storage.plans.getAll().filter(i => i.enabled);
+    const routineSummary = planItems.map(i => i.label).join(', ');
     return `You are GlowGain AI, a health coach. Be warm, short, specific.
 
-ROUTINE: Cetaphil wash → Pond's Gel → UVROZ sunscreen → 2 chapatis+2 eggs | Rice+dal+veg lunch | Milk+bananas snack${isWorkoutDay?' + workout':''} | Chapatis+sabzi dinner → Cetaphil wash → Pond's Gel night
+ROUTINE: ${routineSummary}
 GOAL: +0.3-0.5 kg/week, clear skin.
 
 TODAY (${D_LONG[DOW]}):
@@ -881,19 +1364,19 @@ Streak: ${streak} days
 Rules: 2-4 sentences only. Reference their actual tasks. End with 1 question.`;
   }
 
-  // ── FULL PROMPT (TinyLlama 1.1B+) ────────────────────────────────────
-  // Larger models can follow richer context and nuanced coaching instructions.
+  // Full prompt — reads live plan items
+  const planItems = storage.plans.getAll().filter(i => i.enabled);
+  const routineLines = planItems.map(i =>
+    `  • [${i.block.toUpperCase()}] ${i.icon} ${i.label}${i.tip ? ' — ' + i.tip : ''}`
+  ).join('\n');
+
   return `You are GlowGain AI — a dedicated personal health coach embedded in the user's daily tracker app on their phone.
 
 ## YOUR ROLE
 Coach the user on their exact skincare and weight-gain routine. You are warm, encouraging, and precise. You ALWAYS reference their real data — never give generic advice.
 
 ## USER'S FULL ROUTINE
-**Morning:** Cetaphil Gentle face wash → Pond's Light Moisturizer Gel → UVROZ SPF50 sunscreen → Breakfast: 2 chapatis + 2 boiled/scrambled eggs
-**Afternoon:** Lunch: rice + dal + vegetables; reapply sunscreen if outdoors
-**Evening:** Snack: full-fat milk + 2–3 bananas (300+ cal)${isWorkoutDay ? ' + WORKOUT DAY (Mon/Wed/Fri)' : ''}
-**Night:** Dinner: 2–3 chapatis + sabzi or dal → Cetaphil face wash (removes sunscreen) → Pond's Gel night moisturizer
-**Weekly extras:** Sugar scrub on Wed & Sat | Chicken/fish on Sundays
+${routineLines}
 
 ## GOALS
 - Weight gain: +0.3–0.5 kg per week (lean bulk, not fat gain)
@@ -942,7 +1425,7 @@ async function loadModel(modelId) {
       'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.2/dist/transformers.min.js'
     );
     env.allowLocalModels = false;
-    env.useBrowserCache  = true;   // cached after first download — fully offline thereafter
+    env.useBrowserCache  = true;
 
     ai = await pipeline('text-generation', modelId, {
       dtype: 'q4',
@@ -964,16 +1447,28 @@ async function loadModel(modelId) {
 }
 
 function refreshDlProgress() {
+  const container = document.getElementById('dl-files-container');
+  if (!container) return;
+  container.innerHTML = '';
+  for (const [file, pct] of Object.entries(dlProgress)) {
+    const name = file.split('/').pop();
+    const row = document.createElement('div');
+    row.className = 'dl-file-row';
+    row.innerHTML = `
+      <div class="dl-file-name">${name}</div>
+      <div class="dl-file-bar-wrap"><div class="dl-file-fill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="dl-file-pct">${pct.toFixed(0)}%</div>`;
+    container.appendChild(row);
+  }
+  // Also update the legacy single bar if present
   const bar  = document.getElementById('dl-bar');
   const pctL = document.getElementById('dl-pct');
-  const fileL = document.getElementById('dl-file');
-  if (!bar) return;
-  const vals = Object.values(dlProgress);
-  const pct  = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
-  bar.style.width     = pct.toFixed(1) + '%';
-  pctL.textContent    = pct.toFixed(0) + '%';
-  const last = Object.keys(dlProgress).pop() || '';
-  fileL.textContent   = last.split('/').pop();
+  if (bar) {
+    const vals = Object.values(dlProgress);
+    const avg  = vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : 0;
+    bar.style.width = avg.toFixed(1) + '%';
+    if (pctL) pctL.textContent = avg.toFixed(0) + '%';
+  }
 }
 
 /* ── Render Coach Screen ───────────────────────── */
@@ -982,17 +1477,26 @@ function renderCoach() {
   const cachedId    = storage.model.get();
   const cachedModel = AI_MODELS.find(m => m.id === cachedId);
 
-  // ── IDLE: model picker ──
   if (aiState === 'idle') {
+    // FIGMA: Frame 2 — model chip selector (horizontal scroll)
+    const chipRow = AI_MODELS.map(m => `
+      <div class="model-chip${m.rec ? '' : ''}" onclick="loadModel('${m.id}')">
+        <span class="model-chip-icon">${m.icon}</span>
+        <div>
+          <div class="model-chip-name">${m.name}${m.rec ? ' <span style="font-size:9px;color:var(--jade)">★ Rec</span>' : ''}</div>
+          <div class="model-chip-size">${m.size}</div>
+        </div>
+      </div>`).join('');
+
     el.innerHTML = `
       <h2 class="section-heading">AI Coach 🧠</h2>
       <div class="card" style="text-align:center;padding:20px 16px">
         <div style="font-size:46px;margin-bottom:12px">🤖</div>
         <div style="font-family:'Playfair Display',serif;font-size:19px;margin-bottom:8px">Runs 100% on your phone</div>
         <div style="font-size:12.5px;color:var(--cream-dim);line-height:1.75">
-          Download once → cached in browser cache → works<br>
+          Download once → cached in browser → works<br>
           <strong style="color:var(--amber)">100% offline forever</strong> after that.<br>
-          The AI reads your <strong style="color:var(--jade)">live stats</strong> on every message.
+          The AI reads your <strong style="color:var(--jade)">live custom plan</strong> on every message.
         </div>
       </div>
 
@@ -1008,27 +1512,16 @@ function renderCoach() {
           <span style="font-size:20px;color:var(--amber)">›</span>
         </div>
         <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:10px 2px 8px">Or pick a different model</div>
-      ` : '<div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:4px 2px 10px">Choose a model to download</div>'}
+      ` : '<div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:4px 2px 10px">Choose a model</div>'}
 
-      ${AI_MODELS.map(m => `
-        <div class="model-card ${m.rec ? 'rec' : ''}" onclick="loadModel('${m.id}')">
-          <span class="model-icon">${m.icon}</span>
-          <div style="flex:1">
-            <div class="model-name">${m.name}
-              ${m.rec ? '<span class="badge-pill badge-green">Recommended</span>' : ''}
-            </div>
-            <div class="model-meta">${m.size} · ${m.note}</div>
-          </div>
-          <span style="font-size:20px;color:var(--cream-dim)">›</span>
-        </div>`).join('')}
+      <div class="model-chips-row">${chipRow}</div>
 
       <div class="note-info" style="margin-top:4px">
-        💡 All models use 4-bit quantization (q4) to fit in phone RAM. SmolLM2 135M is the best balance for Redmi 9i (2 GB RAM).
+        💡 All models use 4-bit quantization (q4). SmolLM2 135M is best for Redmi 9i (2 GB RAM).
       </div>`;
     return;
   }
 
-  // ── LOADING ──
   if (aiState === 'loading') {
     const m = AI_MODELS.find(x => x.id === aiModelId) || { name: aiModelId, size: '?' };
     el.innerHTML = `
@@ -1041,9 +1534,10 @@ function renderCoach() {
           <div class="progress-fill" id="dl-bar" style="width:0%"></div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px">
-          <span id="dl-file" style="font-size:10px;color:var(--cream-dim);max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left"></span>
-          <span id="dl-pct"  style="font-size:13px;color:var(--jade);font-weight:600">0%</span>
+          <span style="font-size:10px;color:var(--cream-dim)">Downloading model files…</span>
+          <span id="dl-pct" style="font-size:13px;color:var(--jade);font-weight:600">0%</span>
         </div>
+        <div id="dl-files-container" class="dl-files"></div>
         <div style="font-size:11.5px;color:var(--cream-dim);margin-top:18px;line-height:1.7">
           Keep screen on · stay connected to Wi-Fi<br>
           <strong style="color:var(--amber)">After this, zero internet needed. Ever.</strong> 📱
@@ -1052,7 +1546,6 @@ function renderCoach() {
     return;
   }
 
-  // ── ERROR ──
   if (aiState === 'error') {
     el.innerHTML = `
       <h2 class="section-heading">AI Coach 🧠</h2>
@@ -1093,7 +1586,7 @@ function renderCoach() {
         <div id="chat-box" class="chat-box">
           <div class="msg ai">
             Hey! I'm your GlowGain Coach 🌿<br>
-            Running 100% on your phone — no internet needed. I can see your real progress and stats today. What's on your mind?
+            Running 100% on your phone — no internet needed. I can see your real progress and custom plan today. What's on your mind?
             <div class="msg-time">${fmtTime()}</div>
           </div>
         </div>
@@ -1144,19 +1637,17 @@ async function sendMsg(msg) {
   const box = document.getElementById('chat-box');
   const thinking = document.createElement('div');
   thinking.className = 'msg think';
-  thinking.innerHTML = 'Thinking<span class="dots"></span>';
+  // FIGMA: 3-dot pulse animation
+  thinking.innerHTML = `Thinking <span class="dots-anim"><span></span><span></span><span></span></span>`;
   box?.appendChild(thinking);
   box?.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
 
   try {
-    // ── SYSTEM PROMPT rebuilt fresh with live stats ──────────────────
     const sysPrompt = buildSystemPrompt(aiPromptType);
-
     const messages = [
       { role: 'system',    content: sysPrompt },
-      ...chatHistory.slice(-8),  // keep conversation context
+      ...chatHistory.slice(-8),
     ];
-
     const output = await ai(messages, {
       max_new_tokens:   180,
       temperature:      0.72,
@@ -1165,7 +1656,6 @@ async function sendMsg(msg) {
       return_full_text: false,
     });
 
-    // Parse Transformers.js v3 response (messages format)
     let reply = '';
     const gen = output[0]?.generated_text;
     if (Array.isArray(gen)) {
@@ -1175,7 +1665,6 @@ async function sendMsg(msg) {
       reply = typeof gen === 'string' ? gen : '';
     }
 
-    // Strip template tokens some models leak
     reply = reply
       .replace(/<\|[^|]+\|>/g, '')
       .replace(/^(assistant|ASSISTANT|GlowGain AI|Coach):\s*/i, '')
@@ -1183,7 +1672,6 @@ async function sendMsg(msg) {
       .trim();
 
     if (!reply || reply.length < 3) reply = "I'm still warming up — could you rephrase that?";
-
     chatHistory.push({ role: 'assistant', content: reply, time: fmtTime() });
   } catch (err) {
     console.error('[AI generate]', err);
@@ -1197,7 +1685,7 @@ async function sendMsg(msg) {
 }
 
 /* ═══════════════════════════════════════════════════
-   SCREEN 3 — WEIGHT
+   SCREEN 3 — WEIGHT (with bottom sheet modal)
 ═══════════════════════════════════════════════════ */
 function renderWeight() {
   const log     = storage.getWt();
@@ -1208,30 +1696,43 @@ function renderWeight() {
   const latest  = weights[weights.length - 1];
   const weekChg = weights.length >= 2 ? (latest - weights[0]).toFixed(1) : null;
 
-  // SVG chart
+  // FIGMA: Full-width SVG chart with grid lines + hover dots
   let chartHtml = `
     <div style="text-align:center;padding:24px 0;color:var(--cream-dim)">
       <div style="font-size:34px;margin-bottom:8px">📈</div>
       <div style="font-size:13px">Log 2+ days to see your progress trend</div>
     </div>`;
   if (weights.length >= 2) {
-    const W = 290, H = 92;
+    const W2 = 300, H2 = 96;
     const mn = Math.min(...weights) - 0.5, mx = Math.max(...weights) + 0.5;
-    const xs = W / (weights.length - 1);
-    const Y  = w => H - ((w - mn) / (mx - mn)) * H;
+    const xs = W2 / (weights.length - 1);
+    const Y  = w => H2 - ((w - mn) / (mx - mn)) * H2;
     const pts = weights.map((w, i) => `${(i * xs).toFixed(1)},${Y(w).toFixed(1)}`).join(' ');
+    // Y-axis labels
+    const yLabels = [mn+0.5, (mn+mx)/2, mx-0.5].map(v => v.toFixed(1));
     const dots = weights.map((w, i) => {
       const x = (i * xs).toFixed(1), y = Y(w).toFixed(1);
       return `<circle cx="${x}" cy="${y}" r="5" fill="var(--jade)" stroke="var(--card)" stroke-width="2.5"/>
               <text x="${x}" y="${(parseFloat(y) - 10).toFixed(1)}" text-anchor="middle" font-size="9.5" fill="var(--jade)" font-weight="600">${w.toFixed(1)}</text>`;
     }).join('');
+    // Grid lines
+    const gridLines = [0.25,0.5,0.75].map(f =>
+      `<line x1="-30" y1="${(H2*(1-f)).toFixed(1)}" x2="${W2}" y2="${(H2*(1-f)).toFixed(1)}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,4"/>`
+    ).join('');
+    // X labels
     const xlbls = last7.map(([k], i) => {
       const d = new Date(k + 'T12:00:00');
-      return `<text x="${(i * xs).toFixed(1)}" y="${H + 17}" text-anchor="middle" font-size="9" fill="var(--cream-dim)">${D_SHORT[d.getDay()]}</text>`;
+      return `<text x="${(i * xs).toFixed(1)}" y="${H2 + 17}" text-anchor="middle" font-size="9" fill="var(--cream-dim)">${D_SHORT[d.getDay()]}</text>`;
     }).join('');
-    chartHtml = `<svg width="100%" viewBox="-5 -20 ${W + 10} ${H + 30}" style="overflow:visible;display:block">
-      <polyline points="${pts}" fill="none" stroke="var(--jade)" stroke-width="2.5" stroke-linejoin="round"/>
-      ${dots}${xlbls}
+    // Y labels
+    const ylbls = [0,0.5,1].map((f,idx) => {
+      const val = (mn + (mx-mn)*f).toFixed(1);
+      return `<text x="-32" y="${(H2*(1-f)+4).toFixed(1)}" text-anchor="end" font-size="8.5" fill="var(--cream-dim)">${val}</text>`;
+    }).join('');
+    chartHtml = `<svg width="100%" viewBox="-36 -20 ${W2+40} ${H2+30}" style="overflow:visible;display:block">
+      ${gridLines}
+      <polyline points="${pts}" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linejoin="round"/>
+      ${dots}${xlbls}${ylbls}
     </svg>`;
   }
 
@@ -1241,6 +1742,17 @@ function renderWeight() {
         : `<div class="note-ok">✅ On track! +${weekChg} kg this week — right in the lean bulk sweet spot. Keep going!</div>`)
     : '';
 
+  // Weekly pill badges
+  const weekPills = last7.length >= 2 ? (() => {
+    const pairs = last7.map(([k,v],i,a) => {
+      if (i===0) return null;
+      const diff = (parseFloat(v) - parseFloat(a[i-1][1])).toFixed(1);
+      const col = parseFloat(diff) >= 0 ? 'var(--jade)' : 'var(--danger)';
+      return `<span style="font-size:10px;padding:3px 8px;border-radius:20px;border:1px solid ${col};color:${col};white-space:nowrap">${parseFloat(diff)>=0?'+':''}${diff} kg</span>`;
+    }).filter(Boolean);
+    return `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${pairs.join('')}</div>`;
+  })() : '';
+
   document.getElementById('s-weight').innerHTML = `
     <h2 class="section-heading">Weight Log</h2>
     <div class="card">
@@ -1249,12 +1761,13 @@ function renderWeight() {
         <input type="number" id="wt-inp" class="wt-inp"
           placeholder="${todayWt || '60.0'}"
           value="${todayWt}" step="0.1" min="20" max="300">
-        <button class="wt-save" onclick="saveWeight()">Save</button>
+        <button class="wt-save" onclick="openWeightSheet()">Log</button>
       </div>
     </div>
     <div class="card">
       <p class="card-title">7-Day Trend</p>
       ${chartHtml}
+      ${weekPills}
       ${weights.length >= 2 ? `
         <div class="stat-grid">
           <div class="stat-box">
@@ -1284,6 +1797,30 @@ function renderWeight() {
     </div>` : ''}`;
 }
 
+// FIGMA: Weight bottom sheet open/close
+function openWeightSheet() {
+  const inp = document.getElementById('wt-inp');
+  document.getElementById('wt-sheet-inp').value = inp.value || '';
+  document.getElementById('wt-sheet-date').value = TODAY;
+  document.getElementById('wt-scrim').classList.add('show');
+  document.getElementById('wt-sheet').classList.add('show');
+}
+function closeWeightSheet() {
+  document.getElementById('wt-scrim').classList.remove('show');
+  document.getElementById('wt-sheet').classList.remove('show');
+}
+function saveWeightSheet() {
+  const val  = parseFloat(document.getElementById('wt-sheet-inp').value);
+  const date = document.getElementById('wt-sheet-date').value || TODAY;
+  if (isNaN(val) || val < 20 || val > 300) { toast('Enter a valid weight', 'err'); return; }
+  const log = storage.getWt();
+  log[date] = val;
+  storage.setWt(log);
+  closeWeightSheet();
+  toast('✓ Weight saved!');
+  renderWeight();
+}
+
 function saveWeight() {
   const inp = document.getElementById('wt-inp');
   const val = parseFloat(inp.value);
@@ -1296,7 +1833,7 @@ function saveWeight() {
 }
 
 /* ═══════════════════════════════════════════════════
-   SCREEN 4 — STREAK
+   SCREEN 4 — STREAK (3-col badges, improved heatmap)
 ═══════════════════════════════════════════════════ */
 function renderStreak() {
   const days = [];
@@ -1306,29 +1843,29 @@ function renderStreak() {
     days.push({ key, dow: d.getDay(), pct: pctForDate(key) });
   }
 
-  // Streaks
   let streak = 0;
   for (let i = days.length - 1; i >= 0; i--) { if (days[i].pct >= 80) streak++; else break; }
 
-  const skinIds = ['cet_am', 'pond_am', 'uvr', 'cet_pm', 'pond_pm'];
+  // Use plan-based IDs for skin and diet streaks
+  const skinIds = storage.plans.getSkin().filter(i=>i.enabled&&i.cat==='skin').map(i=>i.id);
+  const dietIds = storage.plans.getDiet().filter(i=>i.enabled&&i.cat==='diet').map(i=>i.id);
+  const minSkin = Math.ceil(Math.max(1, skinIds.length * 0.7));
+  const minDiet = Math.ceil(Math.max(1, dietIds.length * 0.7));
+
   let skinStreak = 0;
   for (let i = days.length - 1; i >= 0; i--) {
     const { done } = storage.getDay(days[i].key);
-    if (skinIds.filter(id => done.includes(id)).length >= 4) skinStreak++;
+    if (skinIds.filter(id => done.includes(id)).length >= minSkin) skinStreak++;
     else break;
   }
-
-  const dietIds = ['bfast', 'lunch', 'snack', 'dinner'];
   let dietStreak = 0;
   for (let i = days.length - 1; i >= 0; i--) {
     const { done } = storage.getDay(days[i].key);
-    if (dietIds.filter(id => done.includes(id)).length >= 3) dietStreak++;
+    if (dietIds.filter(id => done.includes(id)).length >= minDiet) dietStreak++;
     else break;
   }
 
-  let workouts    = 0;
-  let perfectDays = 0;
-  let activeDays  = 0;
+  let workouts = 0, perfectDays = 0, activeDays = 0;
   for (const d of days) {
     const { done } = storage.getDay(d.key);
     if (done.includes('workout')) workouts++;
@@ -1336,14 +1873,25 @@ function renderStreak() {
     if (d.pct > 0)    activeDays++;
   }
 
-  const heatHtml = days.slice(-7).map(d => {
+  // FIGMA: Heatmap with DOW labels above + color legend below
+  const last7Days = days.slice(-7);
+  const dowLabels = last7Days.map(d =>
+    `<div class="heatmap-dow-lbl">${D_SHORT[d.dow].slice(0,1)}</div>`
+  ).join('');
+  const heatHtml = last7Days.map(d => {
     const cls = d.pct === 0 ? 'h0' : d.pct < 50 ? 'h25' : d.pct < 75 ? 'h50' : d.pct < 100 ? 'h75' : 'h100';
     return `<div class="heat-cell ${cls}">
-      <span class="hd">${D_SHORT[d.dow]}</span>
       <span class="hp">${d.pct > 0 ? d.pct + '%' : '—'}</span>
     </div>`;
   }).join('');
+  const legendItems = [
+    {cls:'h0',lbl:'0%'},{cls:'h25',lbl:'<50%'},{cls:'h50',lbl:'50%'},{cls:'h75',lbl:'75%'},{cls:'h100',lbl:'100%'}
+  ];
+  const legendHtml = `<div class="heat-legend">
+    ${legendItems.map(l=>`<div class="heat-swatch ${l.cls}"></div><span>${l.lbl}</span>`).join('')}
+  </div>`;
 
+  // FIGMA: 3-column badge grid, locked badges have 🔒 overlay
   const badges = [
     { e: '🌟', n: '3-Day Glow',    d: '3-day skincare streak',  earned: skinStreak >= 3  },
     { e: '💪', n: 'Mass Builder',  d: '5 workouts completed',   earned: workouts >= 5    },
@@ -1353,6 +1901,7 @@ function renderStreak() {
     { e: '🌱', n: 'Growing Strong',d: '7+ active days tracked', earned: activeDays >= 7  },
     { e: '🎯', n: 'Consistent',    d: '14 active days tracked', earned: activeDays >= 14 },
     { e: '👑', n: 'Elite Glow',    d: '14-day streak at 80%+',  earned: streak >= 14     },
+    { e: '🍽️',n: 'Nutrition Hero', d: '7-day diet streak',      earned: dietStreak >= 7  },
   ];
 
   document.getElementById('s-streak').innerHTML = `
@@ -1375,7 +1924,11 @@ function renderStreak() {
     </div>
     <div class="card">
       <p class="card-title">This Week</p>
-      <div class="heatmap">${heatHtml}</div>
+      <div class="heatmap-wrap">
+        <div class="heatmap-dow-row">${dowLabels}</div>
+        <div class="heatmap">${heatHtml}</div>
+        ${legendHtml}
+      </div>
       <div class="stat-grid">
         <div class="stat-box" style="text-align:center">
           <div class="stat-val" style="font-size:28px">${workouts}</div>
@@ -1391,7 +1944,7 @@ function renderStreak() {
       <p class="card-title">Badges</p>
       <div class="badge-grid">
         ${badges.map(b => `
-          <div class="badge-card ${b.earned ? 'earned' : ''}">
+          <div class="badge-card ${b.earned ? 'earned' : 'locked'}">
             <div class="badge-em">${b.e}</div>
             <div class="badge-n">${b.n}</div>
             <div class="badge-d">${b.d}</div>
@@ -1401,62 +1954,53 @@ function renderStreak() {
 }
 
 /* ═══════════════════════════════════════════════════
-   SCREEN 5 — ROUTINE GUIDE
+   SCREEN 5 — ROUTINE GUIDE (accordion + tab filter)
 ═══════════════════════════════════════════════════ */
+const _routineTab = { active: 'all' };
+
 function renderRoutine() {
-  const row = (icon, text) =>
-    `<div class="rt-row"><span class="rt-ic">${icon}</span><span>${text}</span></div>`;
+  const allItems = [
+    { i:'🧼', l:'Cetaphil Gentle Skin Cleanser',   cat:'skin', tip:'Lukewarm water, gentle circles. Max 2x/day.', block:'Morning' },
+    { i:'✨', l:"Pond's Light Moisturizer Gel",     cat:'skin', tip:'Apply while face is slightly damp.', block:'Morning' },
+    { i:'☀️', l:'UVROZ SPF 50 Sunscreen',           cat:'skin', tip:'Last step, 15 min before sun exposure.', block:'Morning' },
+    { i:'🍳', l:'2 chapatis + 2 eggs',              cat:'diet', tip:'Protein at breakfast reduces hunger all day.', block:'Morning' },
+    { i:'🍱', l:'Rice + dal + vegetables',          cat:'diet', tip:'Aim for a fist-sized portion of each.', block:'Afternoon' },
+    { i:'🌤️', l:'Reapply UVROZ every 2h outdoors', cat:'skin', tip:'Every 2 hours if exposed to sunlight.', block:'Afternoon' },
+    { i:'🍌', l:'Milk + bananas (300+ cal)',        cat:'diet', tip:'Full-fat milk + 2–3 bananas = easy calories.', block:'Evening' },
+    { i:'💪', l:'Workout (Mon/Wed/Fri)',            cat:'fit',  tip:'Compound lifts: squats, push-ups, rows.', block:'Evening' },
+    { i:'🥘', l:'Dinner: chapatis + sabzi / dal',  cat:'diet', tip:'Eat until satisfied, not stuffed.', block:'Night' },
+    { i:'🧼', l:'Cetaphil face wash (PM)',          cat:'skin', tip:'Removes all sunscreen and pollution buildup.', block:'Night' },
+    { i:'🌙', l:"Pond's Gel night moisturizer",     cat:'skin', tip:'Night moisturizer aids skin repair during sleep.', block:'Night' },
+    { i:'💆', l:'Sugar face scrub (Wed & Sat)',     cat:'skin', tip:'Mix sugar + honey, massage 60 s, rinse.', block:'Weekly' },
+    { i:'🍗', l:'Chicken / fish meal (Sunday)',     cat:'diet', tip:'Sunday protein boost helps muscle growth.', block:'Weekly' },
+  ];
+  const tab = _routineTab.active;
+  const filtered = tab === 'all' ? allItems : allItems.filter(i => i.cat === tab);
+  const catColor = { skin: 'tag-skin', diet: 'tag-diet', fit: 'tag-fit' };
+  const tabs = ['all','skin','diet','fit'];
+  const tabLabels = { all:'All', skin:'Skin', diet:'Diet', fit:'Fitness' };
+
+  const accordions = filtered.map((item, idx) => `
+    <div class="accordion-card" id="ac-${idx}">
+      <div class="accordion-head" onclick="toggleAccordion('ac-${idx}')">
+        <span class="accordion-ic">${item.i}</span>
+        <span class="accordion-lbl">${item.l}</span>
+        <span class="accordion-cat ${catColor[item.cat]||'tag-other'}">${item.cat}</span>
+        <span class="accordion-chev">▾</span>
+      </div>
+      <div class="accordion-body">
+        <strong style="color:var(--cream-dim);font-size:10px;text-transform:uppercase;letter-spacing:1px">${item.block}</strong><br>
+        ${item.tip}
+      </div>
+    </div>`).join('');
 
   document.getElementById('s-routine').innerHTML = `
     <h2 class="section-heading">Routine Guide</h2>
-
-    <div class="card">
-      <p class="card-title">Daily Routine</p>
-      <div class="rt-section">🌅 Morning</div>
-      ${row('🧼', 'Cetaphil Gentle Skin Cleanser — lukewarm water, gentle circles')}
-      ${row('✨', "Pond's Light Moisturizer Gel — apply while face slightly damp")}
-      ${row('☀️', 'UVROZ SPF 50 Sunscreen — last step, 15 min before sun exposure')}
-      ${row('🍳', 'Breakfast: 2 chapatis + 2 boiled or scrambled eggs')}
-      <div class="rt-section">☀️ Afternoon</div>
-      ${row('🍱', 'Lunch: Rice + dal + mixed vegetables')}
-      ${row('🌤️', 'Reapply UVROZ sunscreen every 2 h if outdoors')}
-      <div class="rt-section">🌇 Evening</div>
-      ${row('🍌', 'Snack: 1 glass full-fat milk + 2–3 bananas (300+ cal)')}
-      ${row('💪', `Workout — <strong style="color:var(--amber)">Monday, Wednesday, Friday only</strong>`)}
-      <div class="rt-section">🌙 Night</div>
-      ${row('🥘', 'Dinner: 2–3 chapatis + sabzi or dal')}
-      ${row('🧼', 'Cetaphil face wash — fully removes sunscreen + pollution')}
-      ${row('🌙', "Pond's Gel as night moisturizer — repairs skin during sleep")}
+    <div class="tab-bar">
+      ${tabs.map(t=>`<button class="tab-btn${t===tab?' active':''}" onclick="switchRoutineTab('${t}')">${tabLabels[t]}</button>`).join('')}
     </div>
-
-    <div class="card">
-      <p class="card-title">Weekly Extras</p>
-      ${row('💆', '<strong style="color:var(--amber)">Wed & Sat</strong> — Sugar + honey scrub, massage 60 s, rinse')}
-      ${row('🍗', '<strong style="color:var(--amber)">Sunday</strong> — Chicken or fish for extra protein boost')}
-    </div>
-
-    <div class="card">
-      <p class="card-title">Weight Gain Tips</p>
-      ${row('🎯', 'Target: +0.3–0.5 kg/week — any faster is mostly fat')}
-      ${row('📊', 'Weigh every morning — same time, after bathroom, before food')}
-      ${row('🥚', "Never skip eggs — protein prevents muscle loss while bulking")}
-      ${row('🍌', 'Milk + bananas = easiest 300+ cal with micronutrients')}
-      ${row('💪', 'More food on workout days — muscles need fuel to grow')}
-      ${row('😴', '8 h sleep = growth hormone release + skin cell turnover')}
-      ${row('💧', '2.5–3 L water daily — essential for skin glow and metabolism')}
-    </div>
-
-    <div class="card">
-      <p class="card-title">Skincare Tips</p>
-      ${row('✨', "Moisturize immediately after washing — don't let skin air-dry")}
-      ${row('☀️', 'Sunscreen is non-negotiable even indoors near windows')}
-      ${row('🚿', 'Wash face max twice a day — over-washing strips natural oils')}
-      ${row('🙅', "Never pop pimples — causes scarring and spreads bacteria")}
-      ${row('💆', 'Sugar scrub max 2× a week — over-exfoliating damages barrier')}
-      ${row('🌙', 'Night moisturizer + sleep = visible glow within 2 weeks')}
-    </div>
-
-    <div class="card" style="background:rgba(82,176,138,.04);border-color:rgba(82,176,138,.2)">
+    ${accordions}
+    <div class="card" style="background:rgba(82,176,138,.04);border-color:rgba(82,176,138,.2);margin-top:4px">
       <p class="card-title" style="color:var(--jade)">Run from Termux (Redmi 9i)</p>
       <div class="code-block">cd ~/glowgain
 python -m http.server 3000
@@ -1464,6 +2008,226 @@ python -m http.server 3000
 # → Tap ⋮ → "Add to Home Screen"
 # → Works offline after AI download!</div>
     </div>`;
+}
+
+function switchRoutineTab(tab) {
+  _routineTab.active = tab;
+  renderRoutine();
+}
+
+function toggleAccordion(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════════════
+   SCREEN 6 — PLANS (Track B)
+═══════════════════════════════════════════════════ */
+function renderPlans() {
+  const el = document.getElementById('s-plans');
+  const tab = plansActiveTab;
+  const items = tab === 'skin' ? storage.plans.getSkin() : storage.plans.getDiet();
+
+  const cardHtml = items.length === 0 ? emptyStateHtml(tab) : items.map(item => `
+    <div class="plan-card ${item.enabled ? '' : 'disabled'}">
+      <span class="plan-card-icon">${item.icon}</span>
+      <div class="plan-card-info">
+        <div class="plan-card-label">${item.label}</div>
+        <div class="plan-card-sub">${item.block.charAt(0).toUpperCase()+item.block.slice(1)} · ${item.days.length===0?'Every day':item.days.map(d=>D_SHORT[d]).join(', ')}</div>
+      </div>
+      <div class="plan-card-right">
+        ${item.enabled ? '' : '<span class="disabled-badge">Off</span>'}
+        <div class="toggle-switch ${item.enabled ? 'on' : ''}" onclick="togglePlanEnabled('${tab}','${item.id}')"></div>
+        <span class="drag-handle" onclick="openPlanEditor('${tab}','${item.id}')">✏️</span>
+      </div>
+    </div>`).join('');
+
+  el.innerHTML = `
+    <h2 class="section-heading">My Plans</h2>
+    <div class="tab-bar">
+      <button class="tab-btn ${tab==='skin'?'active':''}" onclick="switchPlansTab('skin')">Facecare</button>
+      <button class="tab-btn ${tab==='diet'?'active':''}" onclick="switchPlansTab('diet')">Diet</button>
+    </div>
+    ${cardHtml}`;
+
+  // FAB — always shown on Plans screen
+  let fab = document.getElementById('plans-fab');
+  if (!fab) {
+    fab = document.createElement('button');
+    fab.id = 'plans-fab';
+    fab.className = 'fab';
+    fab.innerHTML = '✚';
+    fab.onclick = () => openPlanEditor(plansActiveTab, null);
+    document.getElementById('app').appendChild(fab);
+  }
+  fab.style.display = 'flex';
+  fab.onclick = () => openPlanEditor(plansActiveTab, null);
+}
+
+function emptyStateHtml(tab) {
+  // FIGMA: Frame 8 — inline SVG clipboard illustration
+  return `<div class="empty-state">
+    <div class="empty-svg">
+      <svg width="80" height="96" viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="12" width="64" height="80" rx="10" fill="#1e2725" stroke="#263230" stroke-width="1.5"/>
+        <rect x="28" y="4" width="24" height="16" rx="6" fill="#1a2120" stroke="#2e3d3a" stroke-width="1"/>
+        <rect x="20" y="32" width="40" height="4" rx="2" fill="#263230"/>
+        <rect x="20" y="44" width="32" height="4" rx="2" fill="#263230"/>
+        <rect x="20" y="56" width="36" height="4" rx="2" fill="#263230"/>
+        <text x="62" y="20" font-size="16">✨</text>
+      </svg>
+    </div>
+    <div class="empty-title">No steps yet</div>
+    <div class="empty-sub">Tap ✚ to add your first ${tab === 'skin' ? 'skincare' : 'diet'} routine step.</div>
+    <button class="btn-add-step" onclick="openPlanEditor('${tab}',null)">Add Step</button>
+  </div>`;
+}
+
+function switchPlansTab(tab) {
+  plansActiveTab = tab;
+  renderPlans();
+}
+
+function togglePlanEnabled(type, id) {
+  const arr = type === 'skin' ? storage.plans.getSkin() : storage.plans.getDiet();
+  const item = arr.find(i => i.id === id);
+  if (!item) return;
+  item.enabled = !item.enabled;
+  if (type === 'skin') storage.plans.setSkin(arr);
+  else                 storage.plans.setDiet(arr);
+  toast(item.enabled ? '✓ Step enabled' : 'Step disabled', item.enabled ? 'ok' : 'warn');
+  renderPlans();
+  renderToday();
+}
+
+/* ═══════════════════════════════════════════════════
+   PLAN EDITOR FUNCTIONS (Track B)
+═══════════════════════════════════════════════════ */
+function openPlanEditor(planType, itemId) {
+  document.getElementById('pe-type').value = planType;
+  document.getElementById('pe-id').value   = itemId || '';
+  document.getElementById('plan-sheet-title').textContent = itemId ? 'Edit Step' : 'Add Step';
+  document.getElementById('pe-delete-btn').style.display = itemId ? 'block' : 'none';
+
+  // Reset fields
+  document.getElementById('pe-label').value = '';
+  document.getElementById('pe-icon').value  = '';
+  document.getElementById('pe-tip').value   = '';
+  document.getElementById('pe-enabled-toggle').className = 'toggle-switch on';
+  segSelectByVal('pe-cat-ctrl', 'skin');
+  segSelectByVal('pe-block-ctrl', 'morning');
+  document.querySelectorAll('#pe-days-row .day-pill').forEach(p => p.classList.remove('on'));
+
+  if (itemId) {
+    const arr = planType === 'skin' ? storage.plans.getSkin() : storage.plans.getDiet();
+    const item = arr.find(i => i.id === itemId);
+    if (item) {
+      document.getElementById('pe-label').value = item.label;
+      document.getElementById('pe-icon').value  = item.icon;
+      document.getElementById('pe-tip').value   = item.tip || '';
+      if (!item.enabled) document.getElementById('pe-enabled-toggle').classList.remove('on');
+      segSelectByVal('pe-cat-ctrl',   item.cat);
+      segSelectByVal('pe-block-ctrl', item.block);
+      document.querySelectorAll('#pe-days-row .day-pill').forEach(p => {
+        if (item.days.includes(parseInt(p.dataset.day))) p.classList.add('on');
+      });
+    }
+  }
+
+  document.getElementById('plan-scrim').classList.add('show');
+  document.getElementById('plan-sheet').classList.add('show');
+  setTimeout(() => document.getElementById('pe-label').focus(), 320);
+}
+
+function closePlanEditor() {
+  document.getElementById('plan-scrim').classList.remove('show');
+  document.getElementById('plan-sheet').classList.remove('show');
+}
+
+function savePlanItem() {
+  const planType = document.getElementById('pe-type').value;
+  const id       = document.getElementById('pe-id').value;
+  const label    = document.getElementById('pe-label').value.trim();
+  const icon     = document.getElementById('pe-icon').value.trim() || '📌';
+  const tip      = document.getElementById('pe-tip').value.trim();
+  const enabled  = document.getElementById('pe-enabled-toggle').classList.contains('on');
+
+  // Get segmented values
+  const catBtn   = document.querySelector('#pe-cat-ctrl .seg-btn.active');
+  const blockBtn = document.querySelector('#pe-block-ctrl .seg-btn.active');
+  const cat      = catBtn?.dataset.val || 'skin';
+  const block    = blockBtn?.dataset.val || 'morning';
+
+  // Days
+  const days = [];
+  document.querySelectorAll('#pe-days-row .day-pill.on').forEach(p => days.push(parseInt(p.dataset.day)));
+
+  if (!label) { toast('Label is required', 'err'); return; }
+  if (!block) { toast('Select a time block', 'err'); return; }
+
+  const arr = planType === 'skin' ? storage.plans.getSkin() : storage.plans.getDiet();
+
+  if (id) {
+    const idx = arr.findIndex(i => i.id === id);
+    if (idx > -1) arr[idx] = { id, label, cat, icon, tip, block, days, enabled };
+  } else {
+    const newId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    arr.push({ id: newId, label, cat, icon, tip, block, days, enabled });
+  }
+
+  if (planType === 'skin') storage.plans.setSkin(arr);
+  else                     storage.plans.setDiet(arr);
+
+  closePlanEditor();
+  toast('Step saved ✓');
+  renderPlans();
+  renderToday();
+}
+
+function deletePlanItemBtn() {
+  const planType = document.getElementById('pe-type').value;
+  const id       = document.getElementById('pe-id').value;
+  if (!id) return;
+  if (!confirm('Remove this step from your plan?')) return;
+  const arr = planType === 'skin' ? storage.plans.getSkin() : storage.plans.getDiet();
+  const filtered = arr.filter(i => i.id !== id);
+  if (planType === 'skin') storage.plans.setSkin(filtered);
+  else                     storage.plans.setDiet(filtered);
+  closePlanEditor();
+  toast('Step removed', 'warn');
+  renderPlans();
+  renderToday();
+}
+
+/* ═══════════════════════════════════════════════════
+   EDITOR HELPERS — segmented control, day pills
+═══════════════════════════════════════════════════ */
+function segSelect(ctrlId, btn) {
+  document.querySelectorAll(`#${ctrlId} .seg-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function segSelectByVal(ctrlId, val) {
+  document.querySelectorAll(`#${ctrlId} .seg-btn`).forEach(b => {
+    b.classList.toggle('active', b.dataset.val === val);
+  });
+}
+
+function toggleDay(pill) {
+  pill.classList.toggle('on');
+}
+
+/* ─── Hide FAB when not on Plans screen ─── */
+function hideFab() {
+  const fab = document.getElementById('plans-fab');
+  if (fab) fab.style.display = 'none';
+}
+
+const _origGo = go;
+// Wrap go() to hide FAB on screen change
+function go(name, btn) {
+  if (name !== 'plans') hideFab();
+  _origGo(name, btn);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1481,6 +2245,9 @@ if ('serviceWorker' in navigator) {
    INIT
 ═══════════════════════════════════════════════════ */
 (function init() {
+  // ─── Track B: seed default plans on first load ───
+  seedDefaultPlans();
+
   updateHeader();
   renderToday();
 })();
