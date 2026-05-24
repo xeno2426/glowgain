@@ -600,6 +600,7 @@ const AI_MODELS = [
     size: '~720 MB',
     note: 'Smarter replies · Good balance of speed and quality',
     rec:  false,
+    minRam: 3,
     prompt: 'compact',
   },
   {
@@ -609,6 +610,7 @@ const AI_MODELS = [
     size: '~637 MB',
     note: 'Best quality · Slower on phone · Best instruction following',
     rec:  false,
+    minRam: 4,
     prompt: 'full',
   },
 ];
@@ -985,6 +987,8 @@ function renderCoach() {
 
   // ── IDLE: model picker ──
   if (aiState === 'idle') {
+    const ramGB  = navigator.deviceMemory || 4; // API returns GB; undefined on unsupported browsers
+    const lowRam = ramGB <= 2;
     el.innerHTML = `
       <h2 class="section-heading">AI Coach 🧠</h2>
       <div class="card" style="text-align:center;padding:20px 16px">
@@ -996,6 +1000,11 @@ function renderCoach() {
           The AI reads your <strong style="color:var(--jade)">live stats</strong> on every message.
         </div>
       </div>
+
+      ${lowRam ? `
+        <div style="background:#3a1a1a;border:1px solid var(--danger);border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#f4a4a4;line-height:1.6">
+          ⚠️ <strong>Low RAM detected (${ramGB} GB)</strong> — Only SmolLM2 135M is safe on your device. Larger models will crash the browser tab.
+        </div>` : ''}
 
       ${cachedModel ? `
         <div class="model-card resume-card" onclick="loadModel('${cachedModel.id}')">
@@ -1011,20 +1020,26 @@ function renderCoach() {
         <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:10px 2px 8px">Or pick a different model</div>
       ` : '<div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-dim);margin:4px 2px 10px">Choose a model to download</div>'}
 
-      ${AI_MODELS.map(m => `
-        <div class="model-card ${m.rec ? 'rec' : ''}" onclick="loadModel('${m.id}')">
+      ${AI_MODELS.map(m => {
+        const blocked = lowRam && m.minRam && ramGB < m.minRam;
+        return `
+        <div class="model-card ${m.rec && !blocked ? 'rec' : ''}" ${blocked
+          ? 'style="opacity:0.4;pointer-events:none"'
+          : `onclick="loadModel('${m.id}')"`}>
           <span class="model-icon">${m.icon}</span>
           <div style="flex:1">
             <div class="model-name">${m.name}
-              ${m.rec ? '<span class="badge-pill badge-green">Recommended</span>' : ''}
+              ${m.rec && !blocked ? '<span class="badge-pill badge-green">Recommended</span>' : ''}
+              ${blocked ? '<span class="badge-pill" style="background:#5a2020;color:#f4a4a4">Needs ${m.minRam}+ GB RAM</span>' : ''}
             </div>
-            <div class="model-meta">${m.size} · ${m.note}</div>
+            <div class="model-meta">${m.size} · ${blocked ? '⚠️ Too large — will crash on your device' : m.note}</div>
           </div>
-          <span style="font-size:20px;color:var(--cream-dim)">›</span>
-        </div>`).join('')}
+          ${!blocked ? '<span style="font-size:20px;color:var(--cream-dim)">›</span>' : ''}
+        </div>`;
+      }).join('')}
 
       <div class="note-info" style="margin-top:4px">
-        💡 All models use 4-bit quantization (q4) to fit in phone RAM. SmolLM2 135M is the best balance for Redmi 9i (2 GB RAM).
+        💡 All models use 4-bit quantization (q4). SmolLM2 135M is the best choice for 2 GB RAM devices.
       </div>`;
     return;
   }
