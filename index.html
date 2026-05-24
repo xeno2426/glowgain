@@ -699,7 +699,7 @@ function confetti() {
 }
 
 function fmtTime() {
-  return NOW.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+  return new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
 }
 
 /* ═══════════════════════════════════════════════════
@@ -947,8 +947,9 @@ async function loadModel(modelId) {
     ai = await pipeline('text-generation', modelId, {
       dtype: 'q4',
       progress_callback: info => {
-        if (info.status === 'download' || info.status === 'downloading') {
-          dlProgress[info.file || info.name || 'model'] = info.progress || 0;
+        // transformers.js v3: 'initiate'→file queued, 'download'→starts, 'progress'→actual %, 'done'→complete
+        if (info.status === 'download' || info.status === 'downloading' || info.status === 'progress') {
+          dlProgress[info.file || info.name || 'model'] = info.progress ?? 0;
           refreshDlProgress();
         }
       },

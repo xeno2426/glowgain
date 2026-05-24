@@ -2,7 +2,7 @@
 // Caches app shell for offline use after first load.
 // AI model weights are cached by Transformers.js via browser cache API — handled separately.
 
-const CACHE_NAME = 'glowgain-v1';
+const CACHE_NAME = 'glowgain-v2';
 const SHELL = [
   '/',
   '/index.html',
